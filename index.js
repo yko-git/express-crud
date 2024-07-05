@@ -1,9 +1,7 @@
 const express = require("express");
 const app = express();
 
-// リクエストが来るたびに処理が走るコールバック
-app.use((req, res) => {
-  console.log("リクエストを受け付けました");
+app.get("/", (req, res) => {
   res.send({ message: "ok" });
 });
 
