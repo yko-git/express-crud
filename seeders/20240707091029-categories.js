@@ -18,10 +18,10 @@ const data = [
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    data.forEach((each) => {
-      each.createdAt = new Date();
-      each.updatedAt = new Date();
-    });
+    // data.forEach((each) => {
+    //   each.createdAt = new Date();
+    //   each.updatedAt = new Date();
+    // });
     await queryInterface.bulkInsert("categories", data, {});
   },
 
