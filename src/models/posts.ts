@@ -1,33 +1,44 @@
-"use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
-  class Posts extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      Posts.hasMany(models.users, { foreignKey: "id" });
-      Posts.belongsToMany(models.categories, {
-        through: "postCategories",
-        foreignKey: "postId",
-      });
-    }
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from "sequelize";
+
+import Categories from "./categories";
+import { sequelize } from "../utils";
+
+class Posts extends Model<
+  InferAttributes<Posts>,
+  InferCreationAttributes<Posts>
+> {
+  declare userId: number;
+  declare title: string;
+  declare body: string;
+  declare status: number;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+}
+
+Posts.init(
+  {
+    userId: DataTypes.INTEGER,
+    title: DataTypes.STRING,
+    body: DataTypes.TEXT,
+    status: DataTypes.INTEGER,
+    createdAt: DataTypes.NOW,
+    updatedAt: DataTypes.NOW,
+  },
+  {
+    tableName: "Posts",
+    sequelize,
   }
-  Posts.init(
-    {
-      userId: DataTypes.INTEGER,
-      title: DataTypes.STRING,
-      body: DataTypes.TEXT,
-      status: DataTypes.INTEGER,
-      createdAt: DataTypes.NOW,
-      updatedAt: DataTypes.NOW,
-    },
-    {
-      sequelize,
-      modelName: "Posts",
-    }
-  );
-  return Posts;
-};
+);
+
+Posts.belongsToMany(Categories, {
+  through: "PostCategories",
+  foreignKey: "postId",
+});
+
+export default Posts;
