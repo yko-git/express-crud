@@ -15,6 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       postId: DataTypes.INTEGER,
       categoryId: DataTypes.INTEGER,
+      createdAt: DataTypes.NOW,
+      updatedAt: DataTypes.NOW,
     },
     {
       sequelize,

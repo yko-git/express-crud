@@ -1,19 +1,14 @@
 "use strict";
-import { Table, Model } from "sequelize-typescript";
 
-interface CategoriesAttributes {
-  id: number;
-  name: string;
-}
-
-module.exports = (sequelize) => {
+const { Model } = require("sequelize");
+module.exports = (sequelize, DataTypes) => {
   class Categories extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models: Categories) {
+    static associate(models) {
       // define association here
       Categories.belongsToMany(models.Categories, {
         through: "postCategories",

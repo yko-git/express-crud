@@ -18,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       authorize_token: DataTypes.STRING,
       name: DataTypes.STRING,
       iconUrl: DataTypes.TEXT,
+      createdAt: DataTypes.NOW,
+      updatedAt: DataTypes.NOW,
     },
     {
       sequelize,

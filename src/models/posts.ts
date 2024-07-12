@@ -21,6 +21,8 @@ module.exports = (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       body: DataTypes.TEXT,
       status: DataTypes.INTEGER,
+      createdAt: DataTypes.NOW,
+      updatedAt: DataTypes.NOW,
     },
     {
       sequelize,
