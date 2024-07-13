@@ -1,26 +1,34 @@
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
-  class PostCategories extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from "sequelize";
+
+import { sequelize } from "../utils";
+
+class PostCategories extends Model<
+  InferAttributes<PostCategories>,
+  InferCreationAttributes<PostCategories>
+> {
+  declare postId: number;
+  declare categoryId: number;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+}
+
+PostCategories.init(
+  {
+    postId: DataTypes.INTEGER,
+    categoryId: DataTypes.INTEGER,
+    createdAt: DataTypes.NOW,
+    updatedAt: DataTypes.NOW,
+  },
+  {
+    tableName: "PostCategories",
+    sequelize,
   }
-  PostCategories.init(
-    {
-      postId: DataTypes.INTEGER,
-      categoryId: DataTypes.INTEGER,
-      createdAt: DataTypes.NOW,
-      updatedAt: DataTypes.NOW,
-    },
-    {
-      sequelize,
-      modelName: "PostCategories",
-    }
-  );
-  return PostCategories;
-};
+);
+
+export default PostCategories;
