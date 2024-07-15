@@ -6,7 +6,7 @@ import {
   CreationOptional,
 } from "sequelize";
 
-import { sequelize } from "../utils";
+import { sequelize } from ".";
 
 class PostCategories extends Model<
   InferAttributes<PostCategories>,

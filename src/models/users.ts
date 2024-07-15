@@ -7,7 +7,7 @@ import {
 } from "sequelize";
 
 import Posts from "./posts";
-import { sequelize } from "../utils";
+import { sequelize } from ".";
 
 class Users extends Model<
   InferAttributes<Users>,
