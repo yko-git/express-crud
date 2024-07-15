@@ -5,8 +5,7 @@ import Categories from "./categories";
 import PostCategories from "./postCategories";
 import Posts from "./posts";
 
-const env = process.env.NODE_ENV || "development";
-const config = require(path.join(__dirname, "/../config/config.json"))[env];
+const config = require(path.join(__dirname, "/../config/config.js"));
 
 export const sequelize = new Sequelize(config);
 
