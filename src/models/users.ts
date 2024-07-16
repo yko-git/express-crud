@@ -6,7 +6,8 @@ import {
   CreationOptional,
 } from "sequelize";
 
-import { sequelize } from "../utils";
+import Posts from "./posts";
+import { sequelize } from ".";
 
 class Users extends Model<
   InferAttributes<Users>,
@@ -34,5 +35,9 @@ Users.init(
     sequelize,
   }
 );
+
+Users.belongsTo(Posts, {
+  foreignKey: "userId",
+});
 
 export default Users;
