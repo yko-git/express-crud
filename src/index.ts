@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import models from "./models";
+import Users from "./models/users";
 
 const app = express();
 
@@ -12,7 +12,7 @@ console.log("Server is online..");
 
 app.post("/auth/signup", async (req: Request, res: Response) => {
   try {
-    const user = await models.Users.create({
+    const user = await Users.create({
       loginId: "hoge@example.com",
       name: "hoge",
       iconUrl: "http://localhost",
