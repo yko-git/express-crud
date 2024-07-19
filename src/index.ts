@@ -1,15 +1,7 @@
 import express, { Request, Response } from "express";
-const bodyParser = require("body-parser");
+import models from "./models";
 
 const app = express();
-const models = require("./models");
-
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-app.use(bodyParser.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.send({ message: "ok" });
