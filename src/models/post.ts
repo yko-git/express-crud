@@ -6,12 +6,12 @@ import {
   CreationOptional,
 } from "sequelize";
 
-import Categories from "./categories";
+import Category from "./category";
 import { sequelize } from ".";
 
-class Posts extends Model<
-  InferAttributes<Posts>,
-  InferCreationAttributes<Posts>
+class Post extends Model<
+  InferAttributes<Post>,
+  InferCreationAttributes<Post>
 > {
   declare userId: number;
   declare title: string;
@@ -21,7 +21,7 @@ class Posts extends Model<
   declare updatedAt: CreationOptional<Date>;
 }
 
-Posts.init(
+Post.init(
   {
     userId: DataTypes.INTEGER,
     title: DataTypes.STRING,
@@ -36,9 +36,14 @@ Posts.init(
   }
 );
 
-Posts.belongsToMany(Categories, {
+Category.belongsToMany(Post, {
+  through: "PostCategories",
+  foreignKey: "categoryId",
+});
+
+Post.belongsToMany(Category, {
   through: "PostCategories",
   foreignKey: "postId",
 });
 
-export default Posts;
+export default Post;

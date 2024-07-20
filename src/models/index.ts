@@ -1,21 +1,13 @@
-import path from "path";
 import { Sequelize } from "sequelize";
-import Users from "./users";
-import Categories from "./categories";
-import PostCategories from "./postCategories";
-import Posts from "./posts";
+import config from "../config/config";
 
-const config = require(path.join(__dirname, "/../config/config.js"));
-
-export const sequelize = new Sequelize(config);
-
-const models = {
-  Users,
-  Categories,
-  PostCategories,
-  Posts,
-};
-
-export type Models = typeof models;
-
-export default models;
+export const sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  {
+    host: config.host,
+    dialect: config.dialect,
+    logging: false,
+  }
+);
