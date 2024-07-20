@@ -8,9 +8,9 @@ import {
 
 import { sequelize } from ".";
 
-class PostCategories extends Model<
-  InferAttributes<PostCategories>,
-  InferCreationAttributes<PostCategories>
+class PostCategory extends Model<
+  InferAttributes<PostCategory>,
+  InferCreationAttributes<PostCategory>
 > {
   declare postId: number;
   declare categoryId: number;
@@ -18,7 +18,7 @@ class PostCategories extends Model<
   declare updatedAt: CreationOptional<Date>;
 }
 
-PostCategories.init(
+PostCategory.init(
   {
     postId: DataTypes.INTEGER,
     categoryId: DataTypes.INTEGER,
@@ -31,4 +31,4 @@ PostCategories.init(
   }
 );
 
-export default PostCategories;
+export default PostCategory;

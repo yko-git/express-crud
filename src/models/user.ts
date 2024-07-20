@@ -6,12 +6,12 @@ import {
   CreationOptional,
 } from "sequelize";
 
-import Posts from "./posts";
+import Post from "./post";
 import { sequelize } from ".";
 
-class Users extends Model<
-  InferAttributes<Users>,
-  InferCreationAttributes<Users>
+class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
 > {
   declare loginId: string;
   declare authorize_token: string;
@@ -21,7 +21,7 @@ class Users extends Model<
   declare updatedAt: CreationOptional<Date>;
 }
 
-Users.init(
+User.init(
   {
     loginId: DataTypes.STRING,
     authorize_token: DataTypes.STRING,
@@ -36,8 +36,12 @@ Users.init(
   }
 );
 
-Users.belongsTo(Posts, {
+User.hasMany(Post, {
   foreignKey: "userId",
 });
 
-export default Users;
+Post.belongsTo(User, {
+  foreignKey: "userId",
+});
+
+export default User;
