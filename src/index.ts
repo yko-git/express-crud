@@ -8,6 +8,11 @@ import bcrypt from "bcrypt";
 
 const app = express();
 
+if (process.env.MYPEPPER) {
+  app.listen(3000);
+  console.log("Server is online.");
+}
+
 app.get("/", (req: Request, res: Response) => {
   res.send({ message: "ok" });
 });
@@ -29,7 +34,7 @@ app.post("/auth/signup", async (req: Request, res: Response) => {
       loginId: req.body.user.loginId,
       name: req.body.user.name,
       iconUrl: req.body.user.iconUrl,
-      authorize_token: hashedPassword,
+      authorizeToken: hashedPassword,
     });
   } catch (error) {
     console.log(error);
@@ -54,6 +59,3 @@ app.post(
     res.json({ user, token });
   }
 );
-
-app.listen(3000);
-console.log("Server is online.");
