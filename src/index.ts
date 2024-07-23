@@ -4,6 +4,7 @@ import User from "./models/user";
 import bodyParser from "body-parser";
 import passport from "./auth";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const app = express();
 
@@ -20,14 +21,20 @@ app.use(bodyParser.json());
 
 app.post("/auth/signup", async (req: Request, res: Response) => {
   try {
+    let hashedPassword = await bcrypt.hash(
+      `${req.body.user.password}${process.env.MYPEPPER}`,
+      10
+    );
     const user = await User.create({
       loginId: req.body.user.loginId,
       name: req.body.user.name,
       iconUrl: req.body.user.iconUrl,
-      authorize_token: req.body.user.authorize_token,
+      authorize_token: hashedPassword,
     });
   } catch (error) {
     console.log(error);
+
+    res.json({ error });
   }
 });
 
@@ -37,7 +44,7 @@ app.use(passport.initialize());
 app.post(
   "/auth/signin",
   passport.authenticate("local", { session: false }),
-  (req, res, next) => {
+  (req: Request, res: Response, next) => {
     // jwtのtokenを作成
     const user = req.user;
     const payload = { user: req.user };
