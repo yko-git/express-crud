@@ -9,12 +9,9 @@ import {
 import Post from "./post";
 import { sequelize } from ".";
 
-class User extends Model<
-  InferAttributes<User>,
-  InferCreationAttributes<User>
-> {
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare loginId: string;
-  declare authorize_token: string;
+  declare authorizeToken: string;
   declare name: string;
   declare iconUrl: string;
   declare createdAt: CreationOptional<Date>;
@@ -24,7 +21,7 @@ class User extends Model<
 User.init(
   {
     loginId: DataTypes.STRING,
-    authorize_token: DataTypes.STRING,
+    authorizeToken: DataTypes.STRING,
     name: DataTypes.STRING,
     iconUrl: DataTypes.TEXT,
     createdAt: DataTypes.NOW,

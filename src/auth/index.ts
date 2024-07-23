@@ -10,12 +10,12 @@ passport.use(
   new LocalStrategy(
     {
       usernameField: "loginId",
-      passwordField: "authorize_token",
+      passwordField: "authorizeToken",
       session: false,
     },
-    (loginId: string, authorize_token: string, done: any) => {
+    (loginId: string, authorizeToken: string, done: any) => {
       User.findOne({
-        where: { loginId: loginId, authorize_token: authorize_token },
+        where: { loginId: loginId, authorizeToken: authorizeToken },
       })
         .then((user) => {
           if (user) {

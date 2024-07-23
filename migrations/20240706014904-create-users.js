@@ -12,7 +12,7 @@ module.exports = {
       loginId: {
         type: Sequelize.STRING,
       },
-      authorize_token: {
+      authorizeToken: {
         type: Sequelize.STRING,
       },
       name: {
