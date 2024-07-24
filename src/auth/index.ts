@@ -18,18 +18,19 @@ passport.use(
       const user = await User.findOne({
         where: { loginId: loginId, authorizeToken: password },
       });
-      let hashedPassword = await bcrypt.hash(
-        `${password}${process.env.MYPEPPER}`,
-        10
-      );
       try {
         if (user) {
-          if (user.dataValues.authorizeToken === hashedPassword) {
+          let userMatch = await bcrypt.compare(
+            password,
+            user.dataValues.authorizeToken
+          );
+          if (userMatch) {
             return done(null, loginId, {
               message: "ユーザーID・パスワードが正しく認証されました。",
             });
           }
         }
+
         throw new Error();
       } catch (error) {
         return done(null, false, {
