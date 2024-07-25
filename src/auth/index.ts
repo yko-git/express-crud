@@ -16,12 +16,12 @@ passport.use(
     },
     async (loginId: string, password: string, done: any) => {
       const user = await User.findOne({
-        where: { loginId: loginId, authorizeToken: password },
+        where: { loginId: loginId },
       });
       try {
         if (user) {
           let userMatch = await bcrypt.compare(
-            password,
+            `${password}${process.env.MYPEPPER}`,
             user.dataValues.authorizeToken
           );
           if (userMatch) {
