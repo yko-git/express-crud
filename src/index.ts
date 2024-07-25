@@ -10,6 +10,12 @@ const app = express();
 
 // passportの初期化
 app.use(passport.initialize());
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(bodyParser.json());
 
 if (process.env.MYPEPPER && process.env.JWT_SECRET) {
   app.listen(3000);
@@ -18,17 +24,10 @@ if (process.env.MYPEPPER && process.env.JWT_SECRET) {
   console.log("認証に必要な環境変数の定義ができていません。");
 }
 
+// index
 app.get("/", (req: Request, res: Response) => {
   res.send({ message: "ok" });
 });
-
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-
-app.use(bodyParser.json());
 
 // auth/signup
 app.post("/auth/signup", async (req: Request, res: Response) => {
@@ -58,7 +57,7 @@ app.post(
       const user = req.user;
       const payload = { user: req.user };
       const token = jwt.sign(payload, `${process.env.JWT_SECRET}` as string, {
-        expiresIn: "1m",
+        expiresIn: "3m",
       });
       res.json({ user, token });
     } catch (error) {
@@ -67,16 +66,33 @@ app.post(
   }
 );
 
-// user
-app.get(
-  "/user",
-  passport.authenticate("jwt", { session: false }),
-  (req: Request, res: Response) => {
-    try {
-      console.log("user情報取得");
-      res.json("private cat");
-    } catch (error) {
-      return res.status(401).send(`認証ができませんでした。${error}`);
-    }
+const auth = (req: any, res: any, next: any) => {
+  // リクエストヘッダーからトークンの取得
+  let token = "";
+  console.log(req.headers.authorization);
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.split(" ")[0] === "Bearer"
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  } else {
+    return next("token none");
   }
-);
+
+  // トークンの検証
+  jwt.verify(token, `${process.env.JWT_SECRET}`, function (err, decoded) {
+    if (err) {
+      next(err.message);
+    } else {
+      req.decoded = decoded;
+      console.log("認証OK");
+      next();
+    }
+  });
+};
+
+// user
+app.get("/user", auth, async (req: Request, res: Response) => {
+  const users = await User.findAll();
+  res.send({ users });
+});
