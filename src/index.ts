@@ -11,6 +11,8 @@ const app = express();
 if (process.env.MYPEPPER && process.env.JWT_SECRET) {
   app.listen(3000);
   console.log("Server is online.");
+} else {
+  console.log("認証に必要な環境変数の定義ができていません。");
 }
 
 app.get("/", (req: Request, res: Response) => {
@@ -30,7 +32,6 @@ app.post("/auth/signup", async (req: Request, res: Response) => {
       `${req.body.user.password}${process.env.MYPEPPER}`,
       10
     );
-    console.log(`signup:${hashedPassword}`);
     const user = await User.create({
       loginId: req.body.user.loginId,
       name: req.body.user.name,
@@ -38,7 +39,11 @@ app.post("/auth/signup", async (req: Request, res: Response) => {
       authorizeToken: hashedPassword,
     });
   } catch (error) {
-    res.json({ error });
+    res.json([
+      {
+        message: "登録ができませんでした。",
+      },
+    ]);
   }
 });
 
