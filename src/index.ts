@@ -8,6 +8,9 @@ import bcrypt from "bcrypt";
 
 const app = express();
 
+// passportの初期化
+app.use(passport.initialize());
+
 if (process.env.MYPEPPER && process.env.JWT_SECRET) {
   app.listen(3000);
   console.log("Server is online.");
@@ -24,8 +27,10 @@ app.use(
     extended: true,
   })
 );
+
 app.use(bodyParser.json());
 
+// auth/signup
 app.post("/auth/signup", async (req: Request, res: Response) => {
   try {
     let hashedPassword = await bcrypt.hash(
@@ -39,21 +44,15 @@ app.post("/auth/signup", async (req: Request, res: Response) => {
       authorizeToken: hashedPassword,
     });
   } catch (error) {
-    res.json([
-      {
-        message: "登録ができませんでした。",
-      },
-    ]);
+    res.json({ message: "登録ができませんでした。" });
   }
 });
 
-// passportの初期化
-app.use(passport.initialize());
-
+// auth/login
 app.post(
   "/auth/login",
   passport.authenticate("local", { session: false }),
-  (req: Request, res: Response, next) => {
+  (req: Request, res: Response) => {
     try {
       // jwtのtokenを作成
       const user = req.user;
@@ -63,11 +62,21 @@ app.post(
       });
       res.json({ user, token });
     } catch (error) {
-      return res.status(401).json([
-        {
-          message: "認証ができませんでした。",
-        },
-      ]);
+      return res.status(401).send("認証ができませんでした。");
+    }
+  }
+);
+
+// user
+app.get(
+  "/user",
+  passport.authenticate("jwt", { session: false }),
+  (req: Request, res: Response) => {
+    try {
+      console.log("user情報取得");
+      res.json("private cat");
+    } catch (error) {
+      return res.status(401).send(`認証ができませんでした。${error}`);
     }
   }
 );

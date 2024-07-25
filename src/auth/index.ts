@@ -4,8 +4,25 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import User from "../models/user";
 import bcrypt from "bcrypt";
+import {
+  Strategy as JWTStrategy,
+  ExtractJwt,
+  StrategyOptions,
+} from "passport-jwt";
 
 const app = express();
+
+// passport-jwtの設定
+const opts: StrategyOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: `${process.env.JWT_SECRET}`,
+};
+
+passport.use(
+  new JWTStrategy(opts, (jwt_payload: any, done: any) => {
+    done(null, jwt_payload);
+  })
+);
 
 passport.use(
   new LocalStrategy(
