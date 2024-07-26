@@ -66,33 +66,11 @@ app.post(
   }
 );
 
-const auth = (req: any, res: any, next: any) => {
-  // リクエストヘッダーからトークンの取得
-  let token = "";
-  console.log(req.headers.authorization);
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.split(" ")[0] === "Bearer"
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  } else {
-    return next("token none");
-  }
-
-  // トークンの検証
-  jwt.verify(token, `${process.env.JWT_SECRET}`, function (err, decoded) {
-    if (err) {
-      next(err.message);
-    } else {
-      req.decoded = decoded;
-      console.log("認証OK");
-      next();
-    }
-  });
-};
-
 // user
-app.get("/user", auth, async (req: Request, res: Response) => {
-  const users = await User.findAll();
-  res.send({ users });
-});
+app.get(
+  "/user",
+  passport.authenticate("jwt", { session: false }),
+  function (req, res) {
+    res.send(req.user);
+  }
+);
