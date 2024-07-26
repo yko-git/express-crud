@@ -6,8 +6,8 @@ import passport from "./auth";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-if (!process.env.MYPEPPER && !process.env.JWT_SECRET) {
-  console.error("認証に必要な環境変数の定義ができていません。");
+if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
+  console.error("env vars are not set.");
   process.exit(1);
 }
 
