@@ -1,5 +1,4 @@
 require("dotenv").config();
-import express, { Request, Response } from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import User from "../models/user";
@@ -9,8 +8,6 @@ import {
   ExtractJwt,
   StrategyOptions,
 } from "passport-jwt";
-
-const app = express();
 
 // passport-jwtの設定
 const opts: StrategyOptions = {
@@ -35,22 +32,29 @@ passport.use(
       const user = await User.findOne({
         where: { loginId: loginId },
       });
-      try {
-        if (user) {
-          let userMatch = await bcrypt.compare(
-            `${password}${process.env.MYPEPPER}`,
-            user.dataValues.authorizeToken
-          );
-          if (userMatch) {
-            return done(null, loginId, {
+      if (user) {
+        let userMatch = await bcrypt.compare(
+          `${password}${process.env.MYPEPPER}`,
+          user.dataValues.authorizeToken
+        );
+        if (userMatch) {
+          const { loginId, name, iconUrl, createdAt, updatedAt } = user;
+          return done(
+            null,
+            {
+              loginId,
+              name,
+              iconUrl,
+              createdAt,
+              updatedAt,
+            },
+            {
               message: "ユーザーID・パスワードが正しく認証されました。",
-            });
-          }
+            }
+          );
         }
-
-        throw new Error();
-      } catch (error) {
-        return done(null, false, {
+      } else {
+        done(null, false, {
           message: "認証情報と一致するレコードがありません。",
         });
       }
