@@ -6,7 +6,14 @@ import passport from "./auth";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+if (!process.env.MYPEPPER && !process.env.JWT_SECRET) {
+  console.error("認証に必要な環境変数の定義ができていません。");
+  process.exit(1);
+}
+
 const app = express();
+app.listen(3000);
+console.log("Server is online.");
 
 // passportの初期化
 app.use(passport.initialize());
@@ -16,13 +23,6 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-
-if (process.env.MYPEPPER && process.env.JWT_SECRET) {
-  app.listen(3000);
-  console.log("Server is online.");
-} else {
-  console.log("認証に必要な環境変数の定義ができていません。");
-}
 
 // index
 app.get("/", (req: Request, res: Response) => {
