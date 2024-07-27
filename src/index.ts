@@ -50,7 +50,9 @@ app.post("/auth/signup", async (req: Request, res: Response) => {
 // auth/login
 app.post(
   "/auth/login",
-  passport.authenticate("local", { session: false }),
+  passport.authenticate("local", {
+    session: false,
+  }),
   (req: Request, res: Response) => {
     try {
       // jwtのtokenを作成
@@ -69,7 +71,9 @@ app.post(
 // user
 app.get(
   "/user",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("jwt", {
+    session: false,
+  }),
   function (req, res) {
     res.send(req.user);
   }

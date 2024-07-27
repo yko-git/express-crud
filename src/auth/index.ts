@@ -11,17 +11,22 @@ import {
 
 // passport-jwtの設定
 const opts: StrategyOptions = {
+  //JWTをリクエストから取得する方法を指定（Bearerトークンから取得）
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  //シークレット文字列
   secretOrKey: `${process.env.JWT_SECRET}`,
 };
 
+// JWT トークンの検証（受信したJWTトークンの検証・ログイン中のユーザーか判定）
 passport.use(
   new JWTStrategy(opts, (jwt_payload: any, done: any) => {
     done(null, jwt_payload);
   })
 );
 
+// ログイン処理（strategy）の定義
 passport.use(
+  "local",
   new LocalStrategy(
     {
       usernameField: "loginId",
