@@ -19,8 +19,29 @@ const opts: StrategyOptions = {
 
 // JWT トークンの検証（受信したJWTトークンの検証・ログイン中のユーザーか判定）
 passport.use(
-  new JWTStrategy(opts, (jwt_payload: any, done: any) => {
-    done(null, jwt_payload);
+  new JWTStrategy(opts, async (jwt_payload: any, done: any) => {
+    const user = await User.findOne(jwt_payload.id);
+    const { loginId, name, iconUrl, createdAt, updatedAt } = user;
+    console.log(user);
+    if (user) {
+      return done(
+        null,
+        {
+          loginId,
+          name,
+          iconUrl,
+          createdAt,
+          updatedAt,
+        },
+        {
+          message: "トークンが正しく認証されました。",
+        }
+      );
+    } else {
+      done(null, false, {
+        message: "トークンが一致していません。",
+      });
+    }
   })
 );
 
