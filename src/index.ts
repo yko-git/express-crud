@@ -31,19 +31,21 @@ app.get("/", (req: Request, res: Response) => {
 
 // auth/signup
 app.post("/auth/signup", async (req: Request, res: Response) => {
+  let hashedPassword = await bcrypt.hash(
+    `${req.body.user.password}${process.env.MYPEPPER}`,
+    10
+  );
+  const user = {
+    loginId: req.body.user.loginId,
+    name: req.body.user.name,
+    iconUrl: req.body.user.iconUrl,
+    authorizeToken: hashedPassword,
+  };
   try {
-    let hashedPassword = await bcrypt.hash(
-      `${req.body.user.password}${process.env.MYPEPPER}`,
-      10
-    );
-    const user = await User.create({
-      loginId: req.body.user.loginId,
-      name: req.body.user.name,
-      iconUrl: req.body.user.iconUrl,
-      authorizeToken: hashedPassword,
-    });
+    await User.create(user);
+    res.send("user情報の登録が完了しました");
   } catch (error) {
-    res.json({ message: "登録ができませんでした。" });
+    res.status(401).send("登録ができませんでした。");
   }
 });
 
