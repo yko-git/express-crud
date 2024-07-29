@@ -71,12 +71,21 @@ app.post(
 );
 
 // user
-app.get(
-  "/user",
-  passport.authenticate("jwt", {
-    session: false,
-  }),
-  function (req, res) {
-    res.send(req.user);
-  }
-);
+app.get("/user", function (req, res, next) {
+  passport.authenticate(
+    "jwt",
+    {
+      session: false,
+    },
+    function (err: any, user: any) {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).send("認証ができませんでした。");
+      } else {
+        return res.send(user.user);
+      }
+    }
+  )(req, res, next);
+});
