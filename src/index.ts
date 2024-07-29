@@ -30,24 +30,43 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // auth/signup
-app.post("/auth/signup", async (req: Request, res: Response) => {
-  let hashedPassword = await bcrypt.hash(
-    `${req.body.user.password}${process.env.MYPEPPER}`,
-    10
-  );
-  const user = {
-    loginId: req.body.user.loginId,
-    name: req.body.user.name,
-    iconUrl: req.body.user.iconUrl,
-    authorizeToken: hashedPassword,
-  };
-  try {
+app.post(
+  "/auth/signup",
+  async (req, res, next) => {
+    let hashedPassword = await bcrypt.hash(
+      `${req.body.user.password}${process.env.MYPEPPER}`,
+      10
+    );
+    const user = {
+      loginId: req.body.user.loginId,
+      name: req.body.user.name,
+      iconUrl: req.body.user.iconUrl,
+      authorizeToken: hashedPassword,
+    };
+    const searchUser = await User.findAll({
+      where: {
+        loginId: req.body.user.loginId,
+      },
+    });
+    let result: string[] = [];
+    searchUser.forEach((value) => {
+      result.push(value.dataValues.loginId);
+    });
+
+    if (result.length <= 1) {
+      console.log("user情報が登録されました");
+      next();
+    } else {
+      console.log("user情報がすでに登録されています");
+      return res.status(401).send("user情報がすでに登録されています");
+    }
     await User.create(user);
+    next();
+  },
+  (req, res, next) => {
     res.send("user情報の登録が完了しました");
-  } catch (error) {
-    res.status(401).send("登録ができませんでした。");
   }
-});
+);
 
 // auth/login
 app.post(
