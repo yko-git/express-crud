@@ -19,8 +19,8 @@ const opts: StrategyOptions = {
 
 // JWT トークンの検証
 passport.use(
-  new JWTStrategy(opts, (jwt_payload: any, done: any) => {
-    done(null, jwt_payload);
+  new JWTStrategy(opts, (jwtPayload: any, done: any) => {
+    done(null, jwtPayload);
   })
 );
 
