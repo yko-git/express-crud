@@ -49,7 +49,7 @@ app.post(
     });
 
     if (searchUser.some((user) => user.loginId)) {
-      return res.status(401).send("user情報がすでに登録されています");
+      return res.status(400).send("user情報がすでに登録されています");
     }
 
     await User.create(user);
