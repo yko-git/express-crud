@@ -24,6 +24,11 @@ passport.use(
   })
 );
 
+// パスワードのハッシュ化
+export const hashedBcrypt = (req: any) => {
+  return bcrypt.hash(`${req.body.user.password}${process.env.MYPEPPER}`, 10);
+};
+
 // ログイン処理（strategy）の定義
 passport.use(
   "local",

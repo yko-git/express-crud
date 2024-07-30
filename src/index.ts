@@ -2,9 +2,8 @@ require("dotenv").config();
 import express, { Request, Response } from "express";
 import User from "./models/user";
 import bodyParser from "body-parser";
-import passport from "./auth";
+import passport, { hashedBcrypt } from "./auth";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -33,10 +32,8 @@ app.get("/", (req: Request, res: Response) => {
 app.post(
   "/auth/signup",
   async (req, res, next) => {
-    let hashedPassword = await bcrypt.hash(
-      `${req.body.user.password}${process.env.MYPEPPER}`,
-      10
-    );
+    const hashedPassword = await hashedBcrypt(req);
+
     const { user: params } = req.body;
     const { loginId, name, iconUrl, authorizeToken } = params || {};
     const user = { loginId, name, iconUrl, authorizeToken };
