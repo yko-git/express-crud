@@ -37,28 +37,21 @@ app.post(
       `${req.body.user.password}${process.env.MYPEPPER}`,
       10
     );
+    const { user: params } = req.body;
+    const { loginId, name, iconUrl, authorizeToken } = params || {};
+    const user = { loginId, name, iconUrl, authorizeToken };
+    user.authorizeToken = hashedPassword;
 
     const searchUser = await User.findAll({
       where: {
         loginId: req.body.user.loginId,
       },
     });
-    let result: string[] = [];
-    searchUser.forEach((value) => {
-      result.push(value.dataValues.loginId);
-    });
 
-    if (result.length <= 1) {
-      console.log("user情報が登録されました");
-      next();
-    } else {
-      console.log("user情報がすでに登録されています");
+    if (searchUser.some((user) => user.loginId)) {
       return res.status(401).send("user情報がすでに登録されています");
     }
-    const { user: params } = req.body;
-    const { loginId, name, iconUrl, authorizeToken } = params || {};
-    const user = { loginId, name, iconUrl, authorizeToken };
-    user.authorizeToken = hashedPassword;
+
     await User.create(user);
     next();
   },
