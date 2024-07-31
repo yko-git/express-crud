@@ -29,9 +29,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // auth/signup
-app.post(
-  "/auth/signup",
-  async (req, res, next) => {
+app.post("/auth/signup", async (req, res, next) => {
+  try {
     const hashedPassword = await hashedBcrypt(req);
 
     const { user: params } = req.body;
@@ -50,12 +49,11 @@ app.post(
     }
 
     await User.create(user);
-    next();
-  },
-  (req, res, next) => {
     res.send("user情報の登録が完了しました");
+  } catch (error) {
+    res.send("userが正しく登録できませんでした");
   }
-);
+});
 
 // auth/login
 app.post(
@@ -72,7 +70,7 @@ app.post(
         expiresIn: "3m",
       });
       res.json({ user, token });
-    } catch (error) {
+    } catch (err) {
       return res.status(401).send("認証ができませんでした。");
     }
   }
