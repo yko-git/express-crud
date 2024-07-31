@@ -45,13 +45,17 @@ app.post("/auth/signup", async (req, res, next) => {
     });
 
     if (searchUser.length) {
-      return res.status(400).send("user情報がすでに登録されています");
+      return res
+        .status(400)
+        .json({ "error message": "user情報がすでに登録されています" });
     }
 
     await User.create(user);
-    res.send("user情報の登録が完了しました");
+    res.json({ "error message": "user情報の登録が完了しました" });
   } catch (error) {
-    return res.status(500).send("userが正しく登録できませんでした");
+    return res
+      .status(500)
+      .json({ "error message": "userが正しく登録できませんでした" });
   }
 });
 
@@ -71,7 +75,9 @@ app.post(
       });
       res.json({ user, token });
     } catch (err) {
-      return res.status(401).send("認証ができませんでした。");
+      return res
+        .status(401)
+        .json({ "error message": "認証ができませんでした。" });
     }
   }
 );
@@ -88,7 +94,9 @@ app.get("/user", function (req, res, next) {
         return next(err);
       }
       if (!user) {
-        return res.status(500).send("認証ができませんでした。");
+        return res
+          .status(500)
+          .json({ "error message": "認証ができませんでした。" });
       } else {
         return res.send(user.user);
       }
