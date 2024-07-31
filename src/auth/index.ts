@@ -25,7 +25,7 @@ passport.use(
 );
 
 // パスワードのハッシュ化
-export const hashedBcrypt = (req: any) => {
+export const hash = (req: any) => {
   return bcrypt.hash(`${req.body.user.password}${process.env.MYPEPPER}`, 10);
 };
 
@@ -43,7 +43,7 @@ passport.use(
         where: { loginId: loginId },
       });
       if (user) {
-        let userMatch = await bcrypt.compare(
+        const userMatch = await bcrypt.compare(
           `${password}${process.env.MYPEPPER}`,
           user.dataValues.authorizeToken
         );
