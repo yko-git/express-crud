@@ -51,7 +51,7 @@ app.post("/auth/signup", async (req, res, next) => {
     await User.create(user);
     res.send("user情報の登録が完了しました");
   } catch (error) {
-    res.send("userが正しく登録できませんでした");
+    return res.status(401).send("userが正しく登録できませんでした");
   }
 });
 
