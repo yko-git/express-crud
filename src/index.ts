@@ -2,7 +2,7 @@ require("dotenv").config();
 import express, { Request, Response } from "express";
 import User from "./models/user";
 import bodyParser from "body-parser";
-import passport, { hashedBcrypt } from "./auth";
+import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
@@ -31,7 +31,7 @@ app.get("/", (req: Request, res: Response) => {
 // auth/signup
 app.post("/auth/signup", async (req, res, next) => {
   try {
-    const hashedPassword = await hashedBcrypt(req);
+    const hashedPassword = await hash(req);
 
     const { user: params } = req.body;
     const { loginId, name, iconUrl, authorizeToken } = params || {};
@@ -44,14 +44,14 @@ app.post("/auth/signup", async (req, res, next) => {
       },
     });
 
-    if (searchUser.some((user) => user.loginId)) {
-      return res.status(422).send("user情報がすでに登録されています");
+    if (searchUser.length) {
+      return res.status(400).send("user情報がすでに登録されています");
     }
 
     await User.create(user);
     res.send("user情報の登録が完了しました");
   } catch (error) {
-    return res.status(503).send("userが正しく登録できませんでした");
+    return res.status(500).send("userが正しく登録できませんでした");
   }
 });
 
@@ -88,7 +88,7 @@ app.get("/user", function (req, res, next) {
         return next(err);
       }
       if (!user) {
-        return res.status(401).send("認証ができませんでした。");
+        return res.status(500).send("認証ができませんでした。");
       } else {
         return res.send(user.user);
       }
