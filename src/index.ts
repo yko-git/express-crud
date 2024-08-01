@@ -104,22 +104,32 @@ app.get("/user", function (req, res, next) {
 });
 
 // posts
-app.post("/posts", async (req, res, next) => {
-  try {
-    const { post: params } = req.body;
-    const { userId, title, body, status, categoryIds } = params || {};
-    const post = { userId, title, body, status, categoryIds };
+app.post(
+  "/posts",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const { post: params } = req.body;
+      const { userId, title, body, status, categoryIds } = params || {};
+      const post = { userId, title, body, status, categoryIds };
 
-    await Post.create(post);
-    console.log(post);
-    res.json({ post });
-  } catch (err) {
-    return res.status(401).json({ errorMessage: "登録ができませんでした。" });
+      await Post.create(post);
+      res.json({ post });
+    } catch (err) {
+      return res.status(401).json({ errorMessage: "登録ができませんでした。" });
+    }
   }
-});
+);
 
-app.get("/posts", (req, res) => {
-  Post.findAll().then((posts) => {
-    res.json({ posts });
-  });
-});
+app.get(
+  "/posts",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const posts = await Post.findAll();
+    if (posts) {
+      res.json({ posts });
+    } else {
+      return res.status(401).json({ errorMessage: "取得ができませんでした。" });
+    }
+  }
+);
