@@ -4,6 +4,7 @@ import User from "./models/user";
 import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
+import Post from "./models/post";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -100,4 +101,25 @@ app.get("/user", function (req, res, next) {
       }
     }
   )(req, res, next);
+});
+
+// posts
+app.post("/posts", async (req, res, next) => {
+  try {
+    const { post: params } = req.body;
+    const { userId, title, body, status, categoryIds } = params || {};
+    const post = { userId, title, body, status, categoryIds };
+
+    await Post.create(post);
+    console.log(post);
+    res.json({ post });
+  } catch (err) {
+    return res.status(401).json({ errorMessage: "登録ができませんでした。" });
+  }
+});
+
+app.get("/posts", (req, res) => {
+  Post.findAll().then((posts) => {
+    res.json({ posts });
+  });
 });
