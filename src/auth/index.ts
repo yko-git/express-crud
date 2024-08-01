@@ -1,13 +1,37 @@
 require("dotenv").config();
-import express, { Request, Response } from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import User from "../models/user";
 import bcrypt from "bcrypt";
+import {
+  Strategy as JWTStrategy,
+  ExtractJwt,
+  StrategyOptions,
+} from "passport-jwt";
 
-const app = express();
+// passport-jwtの設定
+const opts: StrategyOptions = {
+  //JWTをリクエストから取得する方法を指定（Bearerトークンから取得）
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  //シークレット文字列
+  secretOrKey: `${process.env.JWT_SECRET}`,
+};
 
+// JWT トークンの検証
 passport.use(
+  new JWTStrategy(opts, (jwtPayload: any, done: any) => {
+    done(null, jwtPayload);
+  })
+);
+
+// パスワードのハッシュ化
+export const hash = (req: any) => {
+  return bcrypt.hash(`${req.body.user.password}${process.env.MYPEPPER}`, 10);
+};
+
+// ログイン処理（strategy）の定義
+passport.use(
+  "local",
   new LocalStrategy(
     {
       usernameField: "loginId",
@@ -16,24 +40,31 @@ passport.use(
     },
     async (loginId: string, password: string, done: any) => {
       const user = await User.findOne({
-        where: { loginId: loginId, authorizeToken: password },
+        where: { loginId: loginId },
       });
-      try {
-        if (user) {
-          let userMatch = await bcrypt.compare(
-            password,
-            user.dataValues.authorizeToken
-          );
-          if (userMatch) {
-            return done(null, loginId, {
+      if (user) {
+        const userMatch = await bcrypt.compare(
+          `${password}${process.env.MYPEPPER}`,
+          user.dataValues.authorizeToken
+        );
+        if (userMatch) {
+          const { loginId, name, iconUrl, createdAt, updatedAt } = user;
+          return done(
+            null,
+            {
+              loginId,
+              name,
+              iconUrl,
+              createdAt,
+              updatedAt,
+            },
+            {
               message: "ユーザーID・パスワードが正しく認証されました。",
-            });
-          }
+            }
+          );
         }
-
-        throw new Error();
-      } catch (error) {
-        return done(null, false, {
+      } else {
+        done(null, false, {
           message: "認証情報と一致するレコードがありません。",
         });
       }
