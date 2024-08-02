@@ -10,6 +10,7 @@ import Post from "./post";
 import { sequelize } from ".";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  declare id: number;
   declare loginId: string;
   declare authorizeToken: string;
   declare name: string;
@@ -20,6 +21,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
 User.init(
   {
+    id: DataTypes.NUMBER,
     loginId: DataTypes.STRING,
     authorizeToken: DataTypes.STRING,
     name: DataTypes.STRING,
