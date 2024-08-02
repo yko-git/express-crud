@@ -21,7 +21,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
 User.init(
   {
-    id: DataTypes.NUMBER,
+    id: DataTypes.INTEGER,
     loginId: DataTypes.STRING,
     authorizeToken: DataTypes.STRING,
     name: DataTypes.STRING,
