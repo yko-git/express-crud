@@ -72,7 +72,7 @@ app.post(
       const user = req.user;
       const payload = { user: req.user };
       const token = jwt.sign(payload, `${process.env.JWT_SECRET}` as string, {
-        expiresIn: "3m",
+        expiresIn: "30days",
       });
       res.json({ user, token });
     } catch (err) {
@@ -82,16 +82,13 @@ app.post(
 );
 
 // user
-app.get("/user", function (req, res, next) {
+app.get("/user", function (req, res) {
   passport.authenticate(
     "jwt",
     {
       session: false,
     },
     function (err: any, user: any) {
-      if (err) {
-        return next(err);
-      }
       if (!user) {
         return res
           .status(500)
@@ -100,7 +97,7 @@ app.get("/user", function (req, res, next) {
         return res.send(user.user);
       }
     }
-  )(req, res, next);
+  )(req, res);
 });
 
 // posts
