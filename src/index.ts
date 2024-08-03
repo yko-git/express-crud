@@ -35,8 +35,8 @@ app.post("/auth/signup", async (req, res, next) => {
     const hashedPassword = await hash(req);
 
     const { user: params } = req.body;
-    const { id, loginId, name, iconUrl, authorizeToken } = params || {};
-    const user = { id, loginId, name, iconUrl, authorizeToken };
+    const { loginId, name, iconUrl, authorizeToken } = params || {};
+    const user = { loginId, name, iconUrl, authorizeToken };
     user.authorizeToken = hashedPassword;
 
     const searchUser = await User.findAll({
@@ -107,8 +107,8 @@ app.post(
   async (req, res) => {
     try {
       const { post: params } = req.body;
-      const { id, userId, title, body, status, categoryIds } = params || {};
-      const post = { id, userId, title, body, status, categoryIds };
+      const { userId, title, body, status, categoryIds } = params || {};
+      const post = { userId, title, body, status, categoryIds };
       console.log(req.user);
       await Post.create(post);
       res.json({ post });
