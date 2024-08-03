@@ -109,7 +109,8 @@ app.post(
       const { post: params } = req.body;
       const { userId, title, body, status, categoryIds } = params || {};
       const post = { userId, title, body, status, categoryIds };
-      console.log(req.user);
+      // post.userId = req.user;
+      // console.log(req.user);
       await Post.create(post);
       res.json({ post });
     } catch (err) {
