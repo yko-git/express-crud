@@ -4,6 +4,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  HasManyCreateAssociationMixin,
 } from "sequelize";
 
 import Post from "./post";
@@ -17,6 +18,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare iconUrl: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+  declare createPost: HasManyCreateAssociationMixin<Post, "userId">;
 }
 
 User.init(
