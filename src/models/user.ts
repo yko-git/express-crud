@@ -21,11 +21,40 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
 User.init(
   {
-    id: DataTypes.INTEGER,
-    loginId: DataTypes.STRING,
+    id: {
+      primaryKey: true,
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      validate: {
+        notNull: true,
+      },
+    },
+    loginId: {
+      allowNull: false,
+      type: DataTypes.STRING,
+      validate: {
+        notNull: true,
+      },
+    },
     authorizeToken: DataTypes.STRING,
-    name: DataTypes.STRING,
-    iconUrl: DataTypes.TEXT,
+    name: {
+      allowNull: false,
+      type: DataTypes.STRING,
+      validate: {
+        notNull: {
+          msg: "名前は必ず入力してください",
+        },
+      },
+    },
+    iconUrl: {
+      allowNull: false,
+      type: DataTypes.TEXT,
+      validate: {
+        notNull: {
+          msg: "iconUrlは必ず入力してください",
+        },
+      },
+    },
     createdAt: DataTypes.NOW,
     updatedAt: DataTypes.NOW,
   },
