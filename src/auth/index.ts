@@ -42,16 +42,18 @@ passport.use(
       const user = await User.findOne({
         where: { loginId: loginId },
       });
+
       if (user) {
         const userMatch = await bcrypt.compare(
           `${password}${process.env.MYPEPPER}`,
           user.dataValues.authorizeToken
         );
         if (userMatch) {
-          const { loginId, name, iconUrl, createdAt, updatedAt } = user;
+          const { id, loginId, name, iconUrl, createdAt, updatedAt } = user;
           return done(
             null,
             {
+              id,
               loginId,
               name,
               iconUrl,
