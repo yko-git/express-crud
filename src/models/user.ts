@@ -4,7 +4,6 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
-  Optional,
 } from "sequelize";
 
 import Post from "./post";
@@ -22,7 +21,11 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
 User.init(
   {
-    id: { type: DataTypes.NUMBER, primaryKey: true },
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     loginId: {
       allowNull: false,
       type: DataTypes.STRING,

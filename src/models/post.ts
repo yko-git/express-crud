@@ -10,6 +10,7 @@ import Category from "./category";
 import { sequelize } from ".";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
+  declare id: CreationOptional<number>;
   declare userId: string;
   declare title: string;
   declare body: string;
@@ -20,6 +21,11 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
 
 Post.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     userId: DataTypes.STRING,
     title: {
       allowNull: false,
