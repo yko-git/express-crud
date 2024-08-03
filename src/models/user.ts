@@ -4,13 +4,14 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  Optional,
 } from "sequelize";
 
 import Post from "./post";
 import { sequelize } from ".";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  declare id: number;
+  declare id: CreationOptional<number>;
   declare loginId: string;
   declare authorizeToken: string;
   declare name: string;
@@ -21,14 +22,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
 User.init(
   {
-    id: {
-      primaryKey: true,
-      allowNull: false,
-      type: DataTypes.INTEGER,
-      validate: {
-        notNull: true,
-      },
-    },
+    id: { type: DataTypes.NUMBER, primaryKey: true },
     loginId: {
       allowNull: false,
       type: DataTypes.STRING,
