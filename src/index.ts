@@ -109,7 +109,7 @@ app.post(
       const { post: params } = req.body;
       const { userId, title, body, status, categoryIds } = params || {};
       const post = { userId, title, body, status, categoryIds };
-      // post.userId = req.user;
+      post.userId = req.user.user.id;
       // console.log(req.user);
       await Post.create(post);
       res.json({ post });
