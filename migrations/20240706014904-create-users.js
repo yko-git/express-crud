@@ -10,9 +10,6 @@ module.exports = {
       },
       loginId: {
         type: Sequelize.STRING,
-        validate: {
-          notNull: true,
-        },
       },
       authorizeToken: {
         type: Sequelize.STRING,
@@ -20,20 +17,10 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false,
-        validate: {
-          notNull: {
-            msg: "名前は必ず入力してください",
-          },
-        },
       },
       iconUrl: {
         type: Sequelize.TEXT,
         allowNull: false,
-        validate: {
-          notNull: {
-            msg: "iconUrlは必ず入力してください",
-          },
-        },
       },
       createdAt: {
         type: Sequelize.DATE,

@@ -9,37 +9,19 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       userId: {
-        type: Sequelize.INTEGER,
-        validate: {
-          notNull: true,
-        },
+        type: Sequelize.STRING,
       },
       title: {
         type: Sequelize.STRING,
         allowNull: false,
-        validate: {
-          notNull: {
-            msg: "titleは必ず入力してください",
-          },
-        },
       },
       body: {
         type: Sequelize.TEXT,
         allowNull: false,
-        validate: {
-          notNull: {
-            msg: "bodyは必ず入力してください",
-          },
-        },
       },
       status: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-          notNull: {
-            msg: "statusは必ず入力してください",
-          },
-        },
       },
       createdAt: {
         type: Sequelize.DATE,
