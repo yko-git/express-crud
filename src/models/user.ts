@@ -63,7 +63,11 @@ User.init(
   }
 );
 
-User.hasMany(Post, { foreignKey: "userId" });
-Post.belongsTo(User);
+User.hasMany(Post, {
+  sourceKey: "id",
+  foreignKey: "userId",
+  constraints: false,
+});
+// Post.belongsTo(User);
 
 export default User;
