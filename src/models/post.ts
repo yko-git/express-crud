@@ -4,14 +4,16 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  ForeignKey,
 } from "sequelize";
 
 import Category from "./category";
 import { sequelize } from ".";
+import User from "./user";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare id: CreationOptional<number>;
-  declare userId: string;
+  declare userId: ForeignKey<User["id"]>;
   declare title: string;
   declare body: string;
   declare status: number;
