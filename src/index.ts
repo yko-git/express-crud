@@ -107,10 +107,15 @@ app.post(
   async (req, res) => {
     try {
       const { post: params } = req.body;
-      const { userId, title, body, status, categoryIds } = params || {};
-      const post = { userId, title, body, status, categoryIds };
-      post.userId = req.user.user.id;
-      // console.log(req.user);
+      const { title, body, status, categoryIds } = params || {};
+      const post = { title, body, status, categoryIds };
+
+      // const user = new User();
+      const user = req.user;
+      if (user) {
+        post.userId = user.user.id;
+      }
+
       await Post.create(post);
       res.json({ post });
     } catch (err) {
