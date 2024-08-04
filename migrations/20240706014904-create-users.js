@@ -10,6 +10,7 @@ module.exports = {
       },
       loginId: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       authorizeToken: {
         type: Sequelize.STRING,
