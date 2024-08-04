@@ -111,9 +111,9 @@ app.post(
       const post = { title, body, status, categoryIds };
 
       // const user = new User();
-      const user = req.user;
-      if (user) {
-        post.userId = user.user.id;
+      const usersId = req.user;
+      if (usersId) {
+        post.userId = usersId.user.id;
       }
 
       await Post.create(post);
