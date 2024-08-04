@@ -28,7 +28,7 @@ Post.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    userId: DataTypes.STRING,
+    userId: DataTypes.INTEGER,
     title: {
       allowNull: false,
       type: DataTypes.STRING,
@@ -64,6 +64,11 @@ Post.init(
     sequelize,
   }
 );
+
+// Post.belongsTo(User, {
+//   targetKey: "userId",
+// });
+// Post.belongsTo(User, { targetKey: "userId" });
 
 Category.belongsToMany(Post, {
   through: "PostCategories",

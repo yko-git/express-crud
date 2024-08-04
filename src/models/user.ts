@@ -12,7 +12,7 @@ import { sequelize } from ".";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
-  declare loginId: string;
+  declare loginId: number;
   declare authorizeToken: string;
   declare name: string;
   declare iconUrl: string;
@@ -30,7 +30,7 @@ User.init(
     },
     loginId: {
       allowNull: false,
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       validate: {
         notNull: true,
       },
