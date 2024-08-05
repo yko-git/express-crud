@@ -65,11 +65,6 @@ Post.init(
   }
 );
 
-// Post.belongsTo(User, {
-//   targetKey: "userId",
-// });
-// Post.belongsTo(User, { targetKey: "userId" });
-
 Category.belongsToMany(Post, {
   through: "PostCategories",
   foreignKey: "categoryId",
@@ -79,5 +74,7 @@ Post.belongsToMany(Category, {
   through: "PostCategories",
   foreignKey: "postId",
 });
+
+// Post.belongsTo(User);
 
 export default Post;
