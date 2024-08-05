@@ -100,6 +100,32 @@ app.get("/user", function (req, res) {
   )(req, res);
 });
 
+// /user/posts
+app.get("/user/posts", function (req, res) {
+  passport.authenticate(
+    "jwt",
+    {
+      session: false,
+    },
+    async (err: any, user: any) => {
+      const postUser = user.user.id;
+
+      const posts = await Post.findAll({
+        where: {
+          userId: postUser,
+        },
+      });
+      if (posts) {
+        return res.json({ posts });
+      } else {
+        return res
+          .status(400)
+          .json({ errorMessage: "記事が取得できませんでした。" });
+      }
+    }
+  )(req, res);
+});
+
 // posts
 app.post(
   "/posts",
