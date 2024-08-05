@@ -12,6 +12,7 @@ class Category extends Model<
   InferAttributes<Category>,
   InferCreationAttributes<Category>
 > {
+  declare id: CreationOptional<number>;
   declare key: string;
   declare name: string;
   declare createdAt: CreationOptional<Date>;
@@ -20,6 +21,11 @@ class Category extends Model<
 
 Category.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     key: DataTypes.STRING,
     name: DataTypes.STRING,
     createdAt: DataTypes.NOW,
