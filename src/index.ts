@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
 import Post from "./models/post";
+import AuthenticatedRequest from "passport-local";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -100,16 +101,25 @@ app.get("/user", function (req, res) {
   )(req, res);
 });
 
+interface AuthenticatedRequest extends Request {
+  user: { user: User };
+}
+
 // posts
 app.post(
   "/posts",
   passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     try {
+      const { user } = req.user;
+      if (!user) {
+        return res
+          .status(401)
+          .json({ errorMessage: "情報が取得できませんでした。" });
+      }
+
       const { post: params } = req.body;
       const { title, body, status, categoryIds } = params || {};
-
-      const user = <User>req.user;
 
       const post = {
         userId: user.id,
@@ -118,12 +128,8 @@ app.post(
         status,
         categoryIds,
       };
-
-      if (!user) {
-        return res
-          .status(401)
-          .json({ errorMessage: "情報が取得できませんでした。" });
-      }
+      console.log(user);
+      console.log(user.id);
 
       await Post.create(post);
       res.json({ post });
