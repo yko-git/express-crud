@@ -35,8 +35,8 @@ app.post("/auth/signup", async (req, res, next) => {
     const hashedPassword = await hash(req);
 
     const { user: params } = req.body;
-    const { loginId, name, iconUrl, authorizeToken } = params || {};
-    const user = { loginId, name, iconUrl, authorizeToken };
+    const { id, loginId, name, iconUrl, authorizeToken } = params || {};
+    const user = { id, loginId, name, iconUrl, authorizeToken };
     user.authorizeToken = hashedPassword;
 
     const searchUser = await User.findAll({
@@ -108,12 +108,21 @@ app.post(
     try {
       const { post: params } = req.body;
       const { title, body, status, categoryIds } = params || {};
-      const post = { title, body, status, categoryIds };
 
-      if (req.user) {
-        const userId = req.user.id;
-        post.userId = userId;
-        console.log(userId);
+      const user = <User>req.user;
+
+      const post = {
+        userId: user.id,
+        title,
+        body,
+        status,
+        categoryIds,
+      };
+
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ errorMessage: "情報が取得できませんでした。" });
       }
 
       await Post.create(post);
