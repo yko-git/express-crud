@@ -4,6 +4,7 @@ import User from "./models/user";
 import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
+import Post from "./models/post";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -34,8 +35,8 @@ app.post("/auth/signup", async (req, res, next) => {
     const hashedPassword = await hash(req);
 
     const { user: params } = req.body;
-    const { loginId, name, iconUrl, authorizeToken } = params || {};
-    const user = { loginId, name, iconUrl, authorizeToken };
+    const { id, loginId, name, iconUrl, authorizeToken } = params || {};
+    const user = { id, loginId, name, iconUrl, authorizeToken };
     user.authorizeToken = hashedPassword;
 
     const searchUser = await User.findAll({
@@ -71,7 +72,7 @@ app.post(
       const user = req.user;
       const payload = { user: req.user };
       const token = jwt.sign(payload, `${process.env.JWT_SECRET}` as string, {
-        expiresIn: "3m",
+        expiresIn: "30days",
       });
       res.json({ user, token });
     } catch (err) {
@@ -81,16 +82,13 @@ app.post(
 );
 
 // user
-app.get("/user", function (req, res, next) {
+app.get("/user", function (req, res) {
   passport.authenticate(
     "jwt",
     {
       session: false,
     },
     function (err: any, user: any) {
-      if (err) {
-        return next(err);
-      }
       if (!user) {
         return res
           .status(500)
@@ -99,5 +97,52 @@ app.get("/user", function (req, res, next) {
         return res.send(user.user);
       }
     }
-  )(req, res, next);
+  )(req, res);
 });
+
+// posts
+app.post(
+  "/posts",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res: Response) => {
+    try {
+      const { user } = await req.user;
+      if (!user) {
+        return res
+          .status(401)
+          .json({ errorMessage: "情報が取得できませんでした。" });
+      }
+
+      const { post: params } = req.body;
+      const { title, body, status, categoryIds } = params || {};
+
+      const post = {
+        userId: user.id,
+        title,
+        body,
+        status,
+        categoryIds,
+      };
+      console.log(user);
+      console.log(user.id);
+
+      await Post.create(post);
+      res.json({ post });
+    } catch (err) {
+      return res.status(401).json({ errorMessage: "登録ができませんでした。" });
+    }
+  }
+);
+
+app.get(
+  "/posts",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const posts = await Post.findAll();
+    if (posts) {
+      res.json({ posts });
+    } else {
+      return res.status(401).json({ errorMessage: "取得ができませんでした。" });
+    }
+  }
+);
