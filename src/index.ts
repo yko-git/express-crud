@@ -119,7 +119,7 @@ app.post(
         categoryIds,
       };
 
-      if (!req.user) {
+      if (!user) {
         return res
           .status(401)
           .json({ errorMessage: "情報が取得できませんでした。" });
