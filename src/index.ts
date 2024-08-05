@@ -110,6 +110,17 @@ app.get("/user/posts", function (req, res) {
     async (err: any, user: any) => {
       const postUser = user.user.id;
 
+      let searchStatus: any = req.query.status;
+      if (searchStatus) {
+        const postStatus = await Post.findAll({
+          where: {
+            userId: postUser,
+            status: searchStatus,
+          },
+        });
+        return res.json({ postStatus });
+      }
+
       const posts = await Post.findAll({
         where: {
           userId: postUser,
