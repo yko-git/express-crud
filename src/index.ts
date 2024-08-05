@@ -110,10 +110,10 @@ app.post(
       const { title, body, status, categoryIds } = params || {};
       const post = { title, body, status, categoryIds };
 
-      // const user = new User();
-      const usersId = req.user;
-      if (usersId) {
-        post.userId = usersId.user.id;
+      if (req.user) {
+        const userId = req.user.id;
+        post.userId = userId;
+        console.log(userId);
       }
 
       await Post.create(post);

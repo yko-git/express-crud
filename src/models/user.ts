@@ -11,7 +11,6 @@ import Post from "./post";
 import { sequelize } from ".";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  declare usersId: CreationOptional<number>;
   declare id: CreationOptional<number>;
   declare loginId: number;
   declare authorizeToken: string;
@@ -24,7 +23,6 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
 User.init(
   {
-    usersId: DataTypes.INTEGER,
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
