@@ -106,7 +106,7 @@ app.post(
   passport.authenticate("jwt", { session: false }),
   async (req: any, res: Response) => {
     try {
-      const { user } = await req.user;
+      const { user } = req.user;
       if (!user) {
         return res
           .status(401)
@@ -138,6 +138,15 @@ app.get(
   "/posts",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
+    let searchStatus: any = req.query.status;
+    if (searchStatus) {
+      const posts = await Post.findAll({
+        where: {
+          status: searchStatus,
+        },
+      });
+      return res.json({ posts });
+    }
     const posts = await Post.findAll();
     if (posts) {
       res.json({ posts });
