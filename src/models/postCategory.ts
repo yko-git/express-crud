@@ -17,7 +17,7 @@ class PostCategory extends Model<
 > {
   declare id: CreationOptional<number>;
   declare postId: ForeignKey<Post["id"]>;
-  declare categoryIds: ForeignKey<Category["id"]>;
+  declare categoryId: ForeignKey<Category["id"]>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
@@ -27,9 +27,10 @@ PostCategory.init(
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
+      primaryKey: true,
     },
     postId: DataTypes.INTEGER,
-    categoryIds: DataTypes.INTEGER,
+    categoryId: DataTypes.INTEGER,
     createdAt: DataTypes.NOW,
     updatedAt: DataTypes.NOW,
   },
