@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
 import Post from "./models/post";
+import Category from "./models/category";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -126,6 +127,7 @@ app.get("/user/posts", function (req, res) {
           userId: postUser,
         },
       });
+
       if (posts) {
         return res.json({ posts });
       } else {
@@ -153,15 +155,19 @@ app.post(
       const { post: params } = req.body;
       const { title, body, status, categoryIds } = params || {};
 
+      const category = await Category.findAll({
+        where: {
+          id: categoryIds,
+        },
+      });
+
       const post = {
         userId: user.id,
         title,
         body,
         status,
-        categoryIds,
+        categoryIds: category,
       };
-      console.log(user);
-      console.log(user.id);
 
       await Post.create(post);
       res.json({ post });
