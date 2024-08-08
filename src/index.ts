@@ -4,7 +4,7 @@ import User from "./models/user";
 import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
-import Post from "./models/post";
+import { Post, getPost } from "./models/post";
 import Category from "./models/category";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
@@ -110,25 +110,8 @@ app.get("/user/posts", function (req, res) {
     },
     async (err: any, user: any) => {
       try {
-        const userId = await user.user.id;
-        const status = req.query.status;
-        if (status) {
-          const posts = await Post.findAll({
-            where: {
-              userId: userId,
-              status: `${status}`,
-            },
-          });
-
-          return res.json({ posts });
-        } else {
-          const posts = await Post.findAll({
-            where: {
-              userId: userId,
-            },
-          });
-          return res.json({ posts });
-        }
+        const result = await getPost(user, req);
+        return res.json({ result });
       } catch (err) {
         return res
           .status(401)

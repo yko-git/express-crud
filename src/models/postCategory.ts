@@ -7,7 +7,7 @@ import {
   ForeignKey,
 } from "sequelize";
 
-import Post from "./post";
+import { Post } from "./post";
 import { sequelize } from ".";
 import Category from "./category";
 
