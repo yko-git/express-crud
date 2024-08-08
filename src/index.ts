@@ -191,10 +191,6 @@ app.get(
       return res.json({ posts });
     }
     const posts = await Post.findAll();
-    if (posts) {
-      res.json({ posts });
-    } else {
-      return res.status(401).json({ errorMessage: "取得ができませんでした。" });
-    }
+    res.json({ posts });
   }
 );
