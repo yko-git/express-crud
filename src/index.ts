@@ -143,9 +143,16 @@ app.post(
 app.get(
   "/posts",
   passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    const status = req.query;
-    const posts = await Post.findAll({ where: status });
-    return res.json({ posts });
+  async (req: any, res) => {
+    try {
+      const status = req.query;
+      const posts = await Post.findAll({ where: status });
+      return res.json({ posts });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(401)
+        .json({ errorMessage: "情報が取得できませんでした。" });
+    }
   }
 );
