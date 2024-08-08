@@ -155,7 +155,7 @@ app.post(
       const { post: params } = req.body;
       const { title, body, status, categoryIds } = params || {};
 
-      const category = await Category.findAll({
+      const categories = await Category.findAll({
         where: {
           id: categoryIds,
         },
@@ -166,7 +166,7 @@ app.post(
         title,
         body,
         status,
-        categoryIds: category,
+        categoryIds: categories,
       };
 
       await Post.create(post);
