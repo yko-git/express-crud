@@ -26,8 +26,14 @@ Category.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    key: DataTypes.STRING,
-    name: DataTypes.STRING,
+    key: {
+      type: DataTypes.STRING,
+      validate: { notNull: true },
+    },
+    name: {
+      type: DataTypes.STRING,
+      validate: { notNull: true },
+    },
     createdAt: DataTypes.NOW,
     updatedAt: DataTypes.NOW,
   },
