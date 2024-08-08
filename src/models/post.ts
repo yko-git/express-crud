@@ -76,7 +76,9 @@ Post.belongsToMany(Category, {
 });
 
 new Post();
-async function getPost(user: any, req: any) {
+
+// /user/posts get
+async function getUserPost(user: any, req: any) {
   const userId = await user.user.id;
   const status = req.query.status;
 
@@ -99,4 +101,27 @@ async function getPost(user: any, req: any) {
   }
 }
 
-export { Post, getPost };
+// /posts post
+async function getPost(req: any, user: any) {
+  const { post: params } = req.body;
+  const { title, body, status, categoryIds } = params || {};
+
+  const categories = await Category.findAll({
+    where: {
+      id: categoryIds,
+    },
+  });
+
+  const post = {
+    userId: user.id,
+    title,
+    body,
+    status,
+    categoryIds: categories,
+  };
+
+  await Post.create(post);
+  return post;
+}
+
+export { Post, getUserPost, getPost };

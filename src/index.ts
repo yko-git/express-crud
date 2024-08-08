@@ -4,7 +4,7 @@ import User from "./models/user";
 import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
-import { Post, getPost } from "./models/post";
+import { Post, getUserPost, getPost } from "./models/post";
 import Category from "./models/category";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
@@ -110,7 +110,7 @@ app.get("/user/posts", function (req, res) {
     },
     async (err: any, user: any) => {
       try {
-        const result = await getPost(user, req);
+        const result = await getUserPost(user, req);
         return res.json({ result });
       } catch (err) {
         return res
@@ -133,26 +133,8 @@ app.post(
           .status(401)
           .json({ errorMessage: "情報が取得できませんでした。" });
       }
-
-      const { post: params } = req.body;
-      const { title, body, status, categoryIds } = params || {};
-
-      const categories = await Category.findAll({
-        where: {
-          id: categoryIds,
-        },
-      });
-
-      const post = {
-        userId: user.id,
-        title,
-        body,
-        status,
-        categoryIds: categories,
-      };
-
-      await Post.create(post);
-      res.json({ post });
+      const result = await getPost(req, user);
+      res.json({ result });
     } catch (err) {
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });
     }
