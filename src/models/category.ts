@@ -27,10 +27,12 @@ Category.init(
       primaryKey: true,
     },
     key: {
+      allowNull: false,
       type: DataTypes.STRING,
       validate: { notNull: true },
     },
     name: {
+      allowNull: false,
       type: DataTypes.STRING,
       validate: { notNull: true },
     },
