@@ -181,16 +181,8 @@ app.get(
   "/posts",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    const searchStatus: any = req.query.status;
-    if (searchStatus) {
-      const posts = await Post.findAll({
-        where: {
-          status: searchStatus,
-        },
-      });
-      return res.json({ posts });
-    }
-    const posts = await Post.findAll();
-    res.json({ posts });
+    const status = req.query;
+    const posts = await Post.findAll({ where: status });
+    return res.json({ posts });
   }
 );
