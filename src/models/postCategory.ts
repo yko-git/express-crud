@@ -29,8 +29,16 @@ PostCategory.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    postId: DataTypes.INTEGER,
-    categoryId: DataTypes.INTEGER,
+    postId: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      validate: { notNull: true },
+    },
+    categoryId: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      validate: { notNull: true },
+    },
     createdAt: DataTypes.NOW,
     updatedAt: DataTypes.NOW,
   },
