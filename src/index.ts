@@ -109,13 +109,13 @@ app.get("/user/posts", function (req, res) {
       session: false,
     },
     async (err: any, user: any) => {
-      const postUser = user.user.id;
+      const userId = user.user.id;
 
       const searchStatus: any = req.query.status;
       if (searchStatus) {
         const postStatus = await Post.findAll({
           where: {
-            userId: postUser,
+            userId: userId,
             status: searchStatus,
           },
         });
@@ -124,7 +124,7 @@ app.get("/user/posts", function (req, res) {
 
       const posts = await Post.findAll({
         where: {
-          userId: postUser,
+          userId: userId,
         },
       });
 
