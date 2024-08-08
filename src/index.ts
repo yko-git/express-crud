@@ -109,31 +109,30 @@ app.get("/user/posts", function (req, res) {
       session: false,
     },
     async (err: any, user: any) => {
-      const userId = user.user.id;
+      try {
+        const userId = await user.user.id;
+        const status = req.query.status;
+        if (status) {
+          const posts = await Post.findAll({
+            where: {
+              userId: userId,
+              status: `${status}`,
+            },
+          });
 
-      const searchStatus: any = req.query.status;
-      if (searchStatus) {
-        const postStatus = await Post.findAll({
-          where: {
-            userId: userId,
-            status: searchStatus,
-          },
-        });
-        return res.json({ postStatus });
-      }
-
-      const posts = await Post.findAll({
-        where: {
-          userId: userId,
-        },
-      });
-
-      if (posts) {
-        return res.json({ posts });
-      } else {
+          return res.json({ posts });
+        } else {
+          const posts = await Post.findAll({
+            where: {
+              userId: userId,
+            },
+          });
+          return res.json({ posts });
+        }
+      } catch (err) {
         return res
-          .status(400)
-          .json({ errorMessage: "記事が取得できませんでした。" });
+          .status(401)
+          .json({ errorMessage: "情報が取得できませんでした。" });
       }
     }
   )(req, res);
