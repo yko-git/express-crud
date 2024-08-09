@@ -7,7 +7,7 @@ import {
   HasManyCreateAssociationMixin,
 } from "sequelize";
 
-import Post from "./post";
+import { Post } from "./post";
 import { sequelize } from ".";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
@@ -58,16 +58,36 @@ User.init(
     updatedAt: DataTypes.NOW,
   },
   {
-    tableName: "Users",
     sequelize,
+    tableName: "users",
   }
 );
 
-User.hasMany(Post, {
-  sourceKey: "id",
-  foreignKey: "userId",
-  constraints: false,
-});
-// Post.belongsTo(User);
+User.hasMany(Post, { foreignKey: "userId" });
+Post.belongsTo(User, { foreignKey: "userId" });
 
-export default User;
+// /user/posts get
+async function getUserPost(user: any, req: any) {
+  const userId = user.id;
+  const status = req.query.status;
+
+  if (status) {
+    const posts = await Post.findAll({
+      where: {
+        userId: userId,
+        status: `${status}`,
+      },
+    });
+
+    return posts;
+  } else {
+    const posts = await Post.findAll({
+      where: {
+        userId: userId,
+      },
+    });
+    return posts;
+  }
+}
+
+export { User, getUserPost };
