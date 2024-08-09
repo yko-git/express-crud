@@ -60,18 +60,34 @@ Post.init(
     updatedAt: DataTypes.NOW,
   },
   {
-    tableName: "Posts",
     sequelize,
+    tableName: "posts",
   }
 );
 
 Category.belongsToMany(Post, {
-  through: "PostCategories",
+  through: {
+    model: sequelize.define(
+      "PostCategories",
+      {},
+      {
+        tableName: "post_categories",
+      }
+    ),
+  },
   foreignKey: "categoryId",
 });
 
 Post.belongsToMany(Category, {
-  through: "PostCategories",
+  through: {
+    model: sequelize.define(
+      "PostCategories",
+      {},
+      {
+        tableName: "post_categories",
+      }
+    ),
+  },
   foreignKey: "postId",
 });
 
@@ -80,18 +96,19 @@ async function getPost(req: any, user: any) {
   const { post: params } = req.body;
   const { title, body, status, categoryIds } = params || {};
 
-  const categories = await Category.findAll({
-    where: {
-      id: categoryIds,
-    },
-  });
+  // const categories = await Category.findAll({
+  //   where: {
+  //     id: categoryIds,
+  //   },
+  // });
 
   const post = {
     userId: user.id,
     title,
     body,
     status,
-    categoryIds: categories,
+    // categoryIds: categories,
+    categoryIds,
   };
 
   return post;

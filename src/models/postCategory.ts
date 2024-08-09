@@ -43,8 +43,8 @@ PostCategory.init(
     updatedAt: DataTypes.NOW,
   },
   {
-    tableName: "PostCategories",
     sequelize,
+    tableName: "post_categories",
   }
 );
 

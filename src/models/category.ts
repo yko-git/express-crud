@@ -40,8 +40,8 @@ Category.init(
     updatedAt: DataTypes.NOW,
   },
   {
-    tableName: "Categories",
     sequelize,
+    tableName: "categories",
   }
 );
 

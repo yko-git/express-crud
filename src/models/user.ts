@@ -58,8 +58,8 @@ User.init(
     updatedAt: DataTypes.NOW,
   },
   {
-    tableName: "Users",
     sequelize,
+    tableName: "users",
   }
 );
 
