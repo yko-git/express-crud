@@ -75,6 +75,51 @@ Post.belongsToMany(Category, {
   foreignKey: "postId",
 });
 
-// Post.belongsTo(User);
+// /user/posts get
+async function getUserPost(user: any, req: any) {
+  const userId = user.id;
+  const status = req.query.status;
 
-export default Post;
+  if (status) {
+    const posts = await Post.findAll({
+      where: {
+        userId: userId,
+        status: `${status}`,
+      },
+    });
+
+    return posts;
+  } else {
+    const posts = await Post.findAll({
+      where: {
+        userId: userId,
+      },
+    });
+    return posts;
+  }
+}
+
+// /posts post
+async function getPost(req: any, user: any) {
+  const { post: params } = req.body;
+  const { title, body, status, categoryIds } = params || {};
+
+  const categories = await Category.findAll({
+    where: {
+      id: categoryIds,
+    },
+  });
+
+  const post = {
+    userId: user.id,
+    title,
+    body,
+    status,
+    categoryIds: categories,
+  };
+
+  await Post.create(post);
+  return post;
+}
+
+export { Post, getUserPost, getPost };
