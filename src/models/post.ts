@@ -65,30 +65,13 @@ Post.init(
   }
 );
 
-Category.belongsToMany(Post, {
-  through: {
-    model: sequelize.define(
-      "PostCategories",
-      {},
-      {
-        tableName: "post_categories",
-      }
-    ),
-  },
-  foreignKey: "categoryId",
-});
-
 Post.belongsToMany(Category, {
-  through: {
-    model: sequelize.define(
-      "PostCategories",
-      {},
-      {
-        tableName: "post_categories",
-      }
-    ),
-  },
+  through: "PostCategories",
   foreignKey: "postId",
+});
+Category.belongsToMany(Post, {
+  through: "PostCategories",
+  foreignKey: "categoryId",
 });
 
 // /posts post
