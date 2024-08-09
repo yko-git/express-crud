@@ -101,24 +101,24 @@ app.get("/user", function (req, res) {
 });
 
 // /user/posts
-app.get("/user/posts", function (req, res) {
-  passport.authenticate(
-    "jwt",
-    {
-      session: false,
-    },
-    async (err: any, user: any) => {
-      try {
-        const result = await getUserPost(user, req);
-        return res.json({ result });
-      } catch (err) {
-        return res
-          .status(401)
-          .json({ errorMessage: "情報が取得できませんでした。" });
-      }
+app.get(
+  "/user/posts",
+  passport.authenticate("jwt", {
+    session: false,
+  }),
+  async (req: any, res: Response) => {
+    const { user } = req.user;
+    try {
+      const result = await getUserPost(user, req);
+      return res.json({ result });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(401)
+        .json({ errorMessage: "情報が取得できませんでした。" });
     }
-  )(req, res);
-});
+  }
+);
 
 // posts
 app.post(
