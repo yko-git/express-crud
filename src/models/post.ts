@@ -75,11 +75,9 @@ Post.belongsToMany(Category, {
   foreignKey: "postId",
 });
 
-new Post();
-
 // /user/posts get
 async function getUserPost(user: any, req: any) {
-  const userId = await user.user.id;
+  const userId = user.id;
   const status = req.query.status;
 
   if (status) {
