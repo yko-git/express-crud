@@ -1,7 +1,7 @@
 require("dotenv").config();
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import User from "../models/user";
+import { User } from "../models/user";
 import bcrypt from "bcrypt";
 import {
   Strategy as JWTStrategy,

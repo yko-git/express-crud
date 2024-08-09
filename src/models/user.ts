@@ -68,6 +68,29 @@ User.hasMany(Post, {
   foreignKey: "userId",
   constraints: false,
 });
-// Post.belongsTo(User);
 
-export default User;
+// /user/posts get
+async function getUserPost(user: any, req: any) {
+  const userId = user.id;
+  const status = req.query.status;
+
+  if (status) {
+    const posts = await Post.findAll({
+      where: {
+        userId: userId,
+        status: `${status}`,
+      },
+    });
+
+    return posts;
+  } else {
+    const posts = await Post.findAll({
+      where: {
+        userId: userId,
+      },
+    });
+    return posts;
+  }
+}
+
+export { User, getUserPost };

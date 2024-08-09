@@ -1,10 +1,10 @@
 require("dotenv").config();
 import express, { Request, Response } from "express";
-import User from "./models/user";
+import { User, getUserPost } from "./models/user";
 import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
-import { Post, getUserPost, getPost } from "./models/post";
+import { Post, getPost } from "./models/post";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -130,6 +130,7 @@ app.post(
           .json({ errorMessage: "情報が取得できませんでした。" });
       }
       const result = await getPost(req, user);
+      await Post.create(result);
       res.json({ result });
     } catch (err) {
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });

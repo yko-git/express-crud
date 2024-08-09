@@ -9,7 +9,7 @@ import {
 
 import Category from "./category";
 import { sequelize } from ".";
-import User from "./user";
+import { User } from "./user";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare id: CreationOptional<number>;
@@ -75,30 +75,6 @@ Post.belongsToMany(Category, {
   foreignKey: "postId",
 });
 
-// /user/posts get
-async function getUserPost(user: any, req: any) {
-  const userId = user.id;
-  const status = req.query.status;
-
-  if (status) {
-    const posts = await Post.findAll({
-      where: {
-        userId: userId,
-        status: `${status}`,
-      },
-    });
-
-    return posts;
-  } else {
-    const posts = await Post.findAll({
-      where: {
-        userId: userId,
-      },
-    });
-    return posts;
-  }
-}
-
 // /posts post
 async function getPost(req: any, user: any) {
   const { post: params } = req.body;
@@ -118,8 +94,7 @@ async function getPost(req: any, user: any) {
     categoryIds: categories,
   };
 
-  await Post.create(post);
   return post;
 }
 
-export { Post, getUserPost, getPost };
+export { Post, getPost };
