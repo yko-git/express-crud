@@ -82,23 +82,20 @@ app.post(
 );
 
 // user
-app.get("/user", function (req, res) {
-  passport.authenticate(
-    "jwt",
-    {
-      session: false,
-    },
-    function (err: any, user: any) {
-      if (!user) {
-        return res
-          .status(500)
-          .json({ errorMessage: "認証ができませんでした。" });
-      } else {
-        return res.send(user.user);
-      }
+app.get(
+  "/user",
+  passport.authenticate("jwt", {
+    session: false,
+  }),
+  async (req: any, res: Response) => {
+    const { user } = req.user;
+    if (!user) {
+      return res.status(500).json({ errorMessage: "認証ができませんでした。" });
+    } else {
+      return res.send(user);
     }
-  )(req, res);
-});
+  }
+);
 
 // /user/posts
 app.get(
