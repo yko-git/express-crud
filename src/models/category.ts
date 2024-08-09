@@ -7,6 +7,7 @@ import {
 } from "sequelize";
 
 import { sequelize } from ".";
+import PostCategory from "./postCategory";
 
 class Category extends Model<
   InferAttributes<Category>,
@@ -44,5 +45,7 @@ Category.init(
     tableName: "categories",
   }
 );
+
+PostCategory.hasMany(Category);
 
 export default Category;
