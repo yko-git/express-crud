@@ -63,11 +63,8 @@ User.init(
   }
 );
 
-User.hasMany(Post, {
-  sourceKey: "id",
-  foreignKey: "userId",
-  constraints: false,
-});
+User.hasMany(Post, { foreignKey: "userId" });
+Post.belongsTo(User, { foreignKey: "userId" });
 
 // /user/posts get
 async function getUserPost(user: any, req: any) {
