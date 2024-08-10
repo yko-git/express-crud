@@ -4,17 +4,20 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  ForeignKey,
 } from "sequelize";
 
 import { sequelize } from ".";
+import { Post } from "./post";
+import Category from "./category";
 
 class PostCategory extends Model<
   InferAttributes<PostCategory>,
   InferCreationAttributes<PostCategory>
 > {
   declare id: CreationOptional<number>;
-  declare postId: number;
-  declare categoryId: number;
+  declare postId: ForeignKey<Post["id"]>;
+  declare categoryId: ForeignKey<Category["id"]>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
