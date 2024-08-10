@@ -46,6 +46,4 @@ Category.init(
   }
 );
 
-PostCategory.hasMany(Category);
-
 export default Category;
