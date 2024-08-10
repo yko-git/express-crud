@@ -7,9 +7,10 @@ import {
   ForeignKey,
 } from "sequelize";
 
-import Category from "./category";
 import { sequelize } from ".";
 import { User } from "./user";
+import Category from "./category";
+import PostCategory from "./postCategory";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare id: CreationOptional<number>;
@@ -19,6 +20,26 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare status: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  static async createPost(req: any, user: any) {
+    const { post: params } = req.body;
+    const { title, body, status, categoryIds } = params || {};
+    const categories = await Category.findAll({
+      where: {
+        id: categoryIds,
+      },
+    });
+
+    const post = {
+      userId: user.id,
+      title,
+      body,
+      status,
+      categoryIds: categories,
+    };
+
+    return await Post.create(post);
+  }
 }
 
 Post.init(
@@ -66,35 +87,15 @@ Post.init(
 );
 
 Post.belongsToMany(Category, {
-  through: "PostCategories",
+  through: PostCategory,
   foreignKey: "postId",
+  otherKey: "categoryId",
 });
+
 Category.belongsToMany(Post, {
-  through: "PostCategories",
+  through: PostCategory,
   foreignKey: "categoryId",
+  otherKey: "postId",
 });
 
-// /posts post
-async function getPost(req: any, user: any) {
-  const { post: params } = req.body;
-  const { title, body, status, categoryIds } = params || {};
-
-  // const categories = await Category.findAll({
-  //   where: {
-  //     id: categoryIds,
-  //   },
-  // });
-
-  const post = {
-    userId: user.id,
-    title,
-    body,
-    status,
-    // categoryIds: categories,
-    categoryIds,
-  };
-
-  return post;
-}
-
-export { Post, getPost };
+export { Post };
