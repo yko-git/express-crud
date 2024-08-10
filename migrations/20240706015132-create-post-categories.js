@@ -15,6 +15,7 @@ module.exports = {
           model: "posts",
           key: "id",
         },
+        primaryKey: true,
       },
       categoryId: {
         type: Sequelize.INTEGER,
@@ -22,6 +23,7 @@ module.exports = {
           model: "categories",
           key: "id",
         },
+        primaryKey: true,
       },
       createdAt: {
         type: Sequelize.DATE,
