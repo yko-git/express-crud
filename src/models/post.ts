@@ -10,7 +10,6 @@ import {
 import { sequelize } from ".";
 import { User } from "./user";
 import Category from "./category";
-import PostCategory from "./postCategory";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare id: CreationOptional<number>;
@@ -39,6 +38,26 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     };
 
     return await Post.create(post);
+  }
+
+  static async updatePost(req: any) {
+    const { post: params } = req.body;
+    const { title, body, status } = params || {};
+
+    const post = {
+      title,
+      body,
+      status,
+    };
+
+    const param = req.params.id;
+    const id = parseInt(param.slice(1, param.length), 10);
+
+    return await Post.update(post, {
+      where: {
+        id: id,
+      },
+    });
   }
 }
 
@@ -77,25 +96,16 @@ Post.init(
         },
       },
     },
-    createdAt: DataTypes.NOW,
-    updatedAt: DataTypes.NOW,
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   },
-  {
-    sequelize,
-    tableName: "posts",
-  }
+  { sequelize, modelName: "Post", tableName: "posts" }
 );
-
-Post.belongsToMany(Category, {
-  through: PostCategory,
-  foreignKey: "postId",
-  otherKey: "categoryId",
-});
-
-Category.belongsToMany(Post, {
-  through: PostCategory,
-  foreignKey: "categoryId",
-  otherKey: "postId",
-});
 
 export { Post };

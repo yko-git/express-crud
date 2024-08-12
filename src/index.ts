@@ -5,7 +5,6 @@ import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
 import { Post } from "./models/post";
-import { Op } from "sequelize";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -201,6 +200,20 @@ app.delete(
       return res
         .status(401)
         .json({ errorMessage: "情報が取得できませんでした。" });
+    }
+  }
+);
+
+app.patch(
+  "/posts/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res) => {
+    try {
+      await Post.updatePost(req);
+      res.json("投稿を更新しました。");
+    } catch (err) {
+      console.log(err);
+      return res.status(401).json({ errorMessage: "登録ができませんでした。" });
     }
   }
 );
