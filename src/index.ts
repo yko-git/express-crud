@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
 import { Post } from "./models/post";
+import { Op } from "sequelize";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -14,6 +15,11 @@ if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
 const app = express();
 app.listen(3000);
 console.log("Server is online.");
+
+// (async () => {
+//   await sequelize.sync({ force: true });
+//   console.log("All models were synchronized successfully.");
+// })();
 
 // passportの初期化
 app.use(passport.initialize());
@@ -106,8 +112,8 @@ app.get(
   async (req: any, res: Response) => {
     const { user } = req.user;
     try {
-      const result = await getUserPost(user, req);
-      return res.json({ result });
+      const posts = await getUserPost(user, req);
+      return res.json({ posts });
     } catch (err) {
       console.log(err);
       return res
@@ -148,6 +154,28 @@ app.get(
       return res.json({ posts });
     } catch (err) {
       console.log(err);
+      return res
+        .status(401)
+        .json({ errorMessage: "情報が取得できませんでした。" });
+    }
+  }
+);
+
+app.get(
+  "/posts/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res) => {
+    const params = req.params;
+    const id = params.id.slice(1, params.id.length);
+    const posts = await Post.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (posts) {
+      return res.json({ posts });
+    } else {
       return res
         .status(401)
         .json({ errorMessage: "情報が取得できませんでした。" });
