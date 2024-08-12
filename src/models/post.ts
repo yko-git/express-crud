@@ -36,18 +36,18 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
       status,
       categoryIds: categories,
     };
-
     return await Post.create(post);
   }
 
   static async updatePost(req: any) {
     const { post: params } = req.body;
-    const { title, body, status } = params || {};
+    const { title, body, status, categoryIds } = params || {};
 
     const post = {
       title,
       body,
       status,
+      categoryIds,
     };
 
     const param = req.params.id;
@@ -58,6 +58,18 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
         id: id,
       },
     });
+  }
+
+  static async deletePost(req: any) {
+    const params = req.params;
+    const id = params.id.slice(1, params.id.length);
+
+    const post = await Post.destroy({
+      where: {
+        id: id,
+      },
+    });
+    return post;
   }
 }
 

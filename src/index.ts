@@ -186,17 +186,10 @@ app.delete(
   "/posts/:id",
   passport.authenticate("jwt", { session: false }),
   async (req: any, res) => {
-    const params = req.params;
-    const id = params.id.slice(1, params.id.length);
-    const posts = await Post.destroy({
-      where: {
-        id: id,
-      },
-    });
-
-    if (posts) {
+    try {
+      await Post.deletePost(req);
       return res.json("投稿を削除しました。");
-    } else {
+    } catch (err) {
       return res
         .status(401)
         .json({ errorMessage: "情報が取得できませんでした。" });
