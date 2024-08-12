@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
 import { Post } from "./models/post";
+import { sequelize } from "./models";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -13,12 +14,11 @@ if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
 
 const app = express();
 app.listen(3000);
-console.log("Server is online.");
 
-// (async () => {
-//   await sequelize.sync({ force: true });
-//   console.log("All models were synchronized successfully.");
-// })();
+(async () => {
+  await sequelize.sync({ alter: true });
+  console.log("synchronized");
+})();
 
 // passportの初期化
 app.use(passport.initialize());
@@ -59,6 +59,7 @@ app.post("/auth/signup", async (req, res, next) => {
     await User.create(user);
     res.json({ errorMessage: "user情報の登録が完了しました" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ errorMessage: "userが正しく登録できませんでした" });
