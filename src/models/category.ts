@@ -7,7 +7,6 @@ import {
 } from "sequelize";
 
 import { sequelize } from ".";
-import PostCategory from "./postCategory";
 
 class Category extends Model<
   InferAttributes<Category>,
@@ -37,13 +36,14 @@ Category.init(
       type: DataTypes.STRING,
       validate: { notNull: true },
     },
-    createdAt: DataTypes.NOW,
-    updatedAt: DataTypes.NOW,
+    createdAt: {
+      type: DataTypes.DATE,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
   },
-  {
-    sequelize,
-    tableName: "categories",
-  }
+  { sequelize, modelName: "Category", tableName: "categories" }
 );
 
 export default Category;

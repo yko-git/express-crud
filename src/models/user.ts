@@ -30,7 +30,7 @@ User.init(
     },
     loginId: {
       allowNull: false,
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       validate: {
         notNull: true,
       },
@@ -54,13 +54,14 @@ User.init(
         },
       },
     },
-    createdAt: DataTypes.NOW,
-    updatedAt: DataTypes.NOW,
+    createdAt: {
+      type: DataTypes.DATE,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
   },
-  {
-    sequelize,
-    tableName: "users",
-  }
+  { sequelize, modelName: "User", tableName: "users" }
 );
 
 User.hasMany(Post, { foreignKey: "userId" });

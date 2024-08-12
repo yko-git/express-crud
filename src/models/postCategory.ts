@@ -30,22 +30,29 @@ PostCategory.init(
       primaryKey: true,
     },
     postId: {
-      allowNull: false,
       type: DataTypes.INTEGER,
-      validate: { notNull: true },
+      primaryKey: true,
+      references: {
+        model: Post,
+        key: "id",
+      },
     },
     categoryId: {
-      allowNull: false,
       type: DataTypes.INTEGER,
-      validate: { notNull: true },
+      primaryKey: true,
+      references: {
+        model: Category,
+        key: "id",
+      },
     },
-    createdAt: DataTypes.NOW,
-    updatedAt: DataTypes.NOW,
+    createdAt: {
+      type: DataTypes.DATE,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
   },
-  {
-    sequelize,
-    tableName: "post_categories",
-  }
+  { sequelize, modelName: "PostCategory", tableName: "post_categories" }
 );
 
 export default PostCategory;

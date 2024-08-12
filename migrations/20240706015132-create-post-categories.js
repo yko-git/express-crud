@@ -11,18 +11,10 @@ module.exports = {
       },
       postId: {
         type: Sequelize.INTEGER,
-        references: {
-          model: "posts",
-          key: "id",
-        },
         primaryKey: true,
       },
       categoryId: {
         type: Sequelize.INTEGER,
-        references: {
-          model: "categories",
-          key: "id",
-        },
         primaryKey: true,
       },
       createdAt: {

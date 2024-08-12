@@ -10,6 +10,7 @@ import {
 import { sequelize } from ".";
 import { User } from "./user";
 import Category from "./category";
+import PostCategory from "./postCategory";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare id: CreationOptional<number>;
@@ -28,15 +29,20 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
         id: categoryIds,
       },
     });
+    const categoryId = categories.map((category) => category.id);
 
     const post = {
       userId: user.id,
       title,
       body,
       status,
-      categoryIds: categories,
+      categoryIds: categoryId,
     };
-    return await Post.create(post);
+    const result = await Post.create(post);
+    console.log(result);
+
+    // await user.addCategories(categoryId);
+    return result;
   }
 
   static async updatePost(req: any) {
@@ -110,14 +116,15 @@ Post.init(
     },
     createdAt: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
     },
     updatedAt: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
     },
   },
   { sequelize, modelName: "Post", tableName: "posts" }
 );
+
+Post.belongsToMany(Category, { through: "post_categories" });
+Category.belongsToMany(Post, { through: "post_categories" });
 
 export { Post };
