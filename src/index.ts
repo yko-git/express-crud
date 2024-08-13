@@ -135,8 +135,8 @@ app.post(
         .json({ errorMessage: "情報が取得できませんでした。" });
     }
     try {
-      const post = await Post.createPost(req, user);
-      res.json({ post });
+      const newPost = await Post.createPost(req, user);
+      res.json({ newPost });
     } catch (err) {
       console.log(err);
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });

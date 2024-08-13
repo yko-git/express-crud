@@ -30,6 +30,7 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
       },
     });
     const categoryId = categories.map((category) => category.id);
+    console.log(categoryId);
 
     const post = {
       userId: user.id,
@@ -39,7 +40,6 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
       categoryIds: categoryId,
     };
     const result = await Post.create(post);
-    console.log(result);
 
     // await user.addCategories(categoryId);
     return result;
