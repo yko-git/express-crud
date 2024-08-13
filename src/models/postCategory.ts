@@ -31,7 +31,6 @@ PostCategory.init(
     },
     postId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       references: {
         model: Post,
         key: "id",
@@ -39,7 +38,6 @@ PostCategory.init(
     },
     categoryId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       references: {
         model: Category,
         key: "id",
