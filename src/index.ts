@@ -1,6 +1,6 @@
 require("dotenv").config();
 import express, { Request, Response } from "express";
-import { User, getUserPost } from "./models/user";
+import { User } from "./models/user";
 import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
@@ -16,7 +16,7 @@ const app = express();
 app.listen(3000);
 
 (async () => {
-  await sequelize.sync({ alter: true });
+  // await sequelize.sync({ alter: true });
   console.log("synchronized");
 })();
 
@@ -112,7 +112,7 @@ app.get(
   async (req: any, res: Response) => {
     const { user } = req.user;
     try {
-      const posts = await getUserPost(user, req);
+      const posts = await User.getUserPost(user, req);
       return res.json({ posts });
     } catch (err) {
       console.log(err);
