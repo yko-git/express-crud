@@ -189,7 +189,7 @@ app.delete(
   async (req: any, res) => {
     const post = await Post.deletePost(req);
     if (post) {
-      return res.json(post);
+      return res.json({ post });
     } else {
       return res
         .status(500)
@@ -203,8 +203,22 @@ app.patch(
   passport.authenticate("jwt", { session: false }),
   async (req: any, res) => {
     try {
-      await Post.updatePost(req);
-      res.json("投稿を更新しました。");
+      const requestParams = req.params;
+      const id = requestParams.id;
+
+      const post = await Post.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!post) {
+        return res
+          .status(404)
+          .json({ errorMessage: "情報が取得できませんでした" });
+      }
+
+      const updatedPost = await post.updatePost(req);
+      res.json({ updatedPost });
     } catch (err) {
       console.log(err);
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });
