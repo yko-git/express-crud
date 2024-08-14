@@ -23,23 +23,14 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     const userId = user.id;
     const status = req.query.status;
 
-    if (status) {
-      const posts = await Post.findAll({
-        where: {
-          userId: userId,
-          status: `${status}`,
-        },
-      });
+    const posts = await Post.findAll({
+      where: {
+        userId: userId,
+        status: `${status}`,
+      },
+    });
 
-      return posts;
-    } else {
-      const posts = await Post.findAll({
-        where: {
-          userId: userId,
-        },
-      });
-      return posts;
-    }
+    return posts;
   }
 }
 
