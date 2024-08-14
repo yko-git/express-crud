@@ -165,19 +165,19 @@ app.get(
   "/posts/:id",
   passport.authenticate("jwt", { session: false }),
   async (req: any, res) => {
-    const params = req.params;
-    const id = params.id.slice(1, params.id.length);
-    const posts = await Post.findOne({
+    const requestParams = req.params;
+    const id = requestParams.id;
+    const post = await Post.findOne({
       where: {
         id,
       },
     });
 
-    if (posts) {
-      return res.json({ posts });
+    if (post) {
+      return res.json({ post });
     } else {
       return res
-        .status(401)
+        .status(404)
         .json({ errorMessage: "情報が取得できませんでした。" });
     }
   }
@@ -187,12 +187,12 @@ app.delete(
   "/posts/:id",
   passport.authenticate("jwt", { session: false }),
   async (req: any, res) => {
-    try {
-      await Post.deletePost(req);
-      return res.json("投稿を削除しました。");
-    } catch (err) {
+    const post = await Post.deletePost(req);
+    if (post) {
+      return res.json(post);
+    } else {
       return res
-        .status(401)
+        .status(500)
         .json({ errorMessage: "情報が取得できませんでした。" });
     }
   }
