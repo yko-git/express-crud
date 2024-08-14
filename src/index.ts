@@ -169,7 +169,7 @@ app.get(
     const id = params.id.slice(1, params.id.length);
     const posts = await Post.findOne({
       where: {
-        id: id,
+        id,
       },
     });
 
