@@ -29,50 +29,65 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
         id: categoryIds,
       },
     });
-    const categoryId = categories.map((category) => category.id);
-    console.log(categoryId);
 
-    const post = {
+    const post = await Post.create({
       userId: user.id,
       title,
       body,
       status,
-      categoryIds: categoryId,
-    };
-    const result = await Post.create(post);
+    });
 
-    // await user.addCategories(categoryId);
-    return result;
+    const categoryPromise = categories.map((category) =>
+      PostCategory.create({
+        postId: post.id,
+        categoryId: category.id,
+      })
+    );
+    await Promise.all(categoryPromise);
+
+    return post;
   }
 
-  static async updatePost(req: any) {
+  async updatePost(req: any) {
     const { post: params } = req.body;
     const { title, body, status, categoryIds } = params || {};
 
-    const post = {
+    this.set({
       title,
       body,
       status,
-      categoryIds,
-    };
+    });
 
-    const param = req.params.id;
-    const id = parseInt(param.slice(1, param.length), 10);
-
-    return await Post.update(post, {
+    await PostCategory.destroy({
       where: {
-        id: id,
+        postId: this.id,
       },
     });
+
+    if (categoryIds && categoryIds.length > 0) {
+      const categoryIdsPromise = categoryIds.map((categoryId: number) =>
+        PostCategory.create({
+          postId: this.id,
+          categoryId,
+        })
+      );
+      await Promise.all(categoryIdsPromise);
+    }
+    return await this.save();
   }
 
   static async deletePost(req: any) {
-    const params = req.params;
-    const id = params.id.slice(1, params.id.length);
+    const requestParams = req.params;
+    const id = requestParams.id;
 
-    const post = await Post.destroy({
+    const post = await Post.findOne({
       where: {
-        id: id,
+        id,
+      },
+    });
+    await Post.destroy({
+      where: {
+        id,
       },
     });
     return post;
