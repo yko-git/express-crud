@@ -63,16 +63,19 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   }
 
   async deletePost() {
-    await PostCategory.destroy({
-      where: {
-        postId: this.id,
-      },
+    const result = await sequelize.transaction(async (t) => {
+      await PostCategory.destroy({
+        where: {
+          postId: this.id,
+        },
+      });
+      return await Post.destroy({
+        where: {
+          id: this.id,
+        },
+      });
     });
-    return await Post.destroy({
-      where: {
-        id: this.id,
-      },
-    });
+    return result;
   }
 }
 
