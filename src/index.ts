@@ -111,6 +111,11 @@ app.get(
   }),
   async (req: any, res: Response) => {
     const { user } = req.user;
+    if (!user) {
+      return res
+        .status(401)
+        .json({ errorMessage: "情報が取得できませんでした。" });
+    }
     try {
       const posts = await User.getUserPost(user, req);
       return res.json({ posts });
@@ -135,8 +140,18 @@ app.post(
         .json({ errorMessage: "情報が取得できませんでした。" });
     }
     try {
-      const newPost = await Post.createPost(req, user);
-      res.json({ newPost });
+      const { post: params } = req.body;
+      const { title, body, status, categoryIds } = params || {};
+
+      const post = Post.build({
+        userId: user.id,
+        title,
+        body,
+        status,
+      });
+
+      await post.createPost(categoryIds);
+      res.json({ newPost: post });
     } catch (err) {
       console.log(err);
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });
