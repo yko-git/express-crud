@@ -111,14 +111,22 @@ app.get(
   }),
   async (req: any, res: Response) => {
     const { user } = req.user;
+    const status = req.query.status;
     if (!user) {
       return res
         .status(401)
         .json({ errorMessage: "情報が取得できませんでした。" });
     }
+
     try {
-      const posts = await User.getUserPost(user, req);
-      return res.json({ posts });
+      const instance = await User.findByPk(user.id);
+      if (!instance) {
+        return res
+          .status(404)
+          .json({ errorMessage: "情報が取得できませんでした。" });
+      }
+      const posts = await instance.getUserPost(status);
+      res.json({ posts });
     } catch (err) {
       console.log(err);
       return res
@@ -151,7 +159,7 @@ app.post(
       });
 
       await post.createPost(categoryIds);
-      res.json({ newPost: post });
+      res.json({ post });
     } catch (err) {
       console.log(err);
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });
