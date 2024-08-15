@@ -226,6 +226,8 @@ app.patch(
       const requestParams = req.params;
       const id = requestParams.id;
 
+      const { post: params } = req.body;
+
       const post = await Post.findOne({
         where: {
           id,
@@ -237,7 +239,7 @@ app.patch(
           .json({ errorMessage: "情報が取得できませんでした" });
       }
 
-      const updatedPost = await post.updatePost(req);
+      const updatedPost = await post.updatePost(params);
       res.json({ updatedPost });
     } catch (err) {
       console.log(err);
