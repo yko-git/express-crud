@@ -183,21 +183,6 @@ app.get(
   }
 );
 
-app.delete(
-  "/posts/:id",
-  passport.authenticate("jwt", { session: false }),
-  async (req: any, res) => {
-    const post = await Post.deletePost(req);
-    if (post) {
-      return res.json({ post });
-    } else {
-      return res
-        .status(500)
-        .json({ errorMessage: "情報が取得できませんでした。" });
-    }
-  }
-);
-
 app.patch(
   "/posts/:id",
   passport.authenticate("jwt", { session: false }),
@@ -222,6 +207,36 @@ app.patch(
     } catch (err) {
       console.log(err);
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });
+    }
+  }
+);
+
+app.delete(
+  "/posts/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res) => {
+    try {
+      const requestParams = req.params;
+      const id = requestParams.id;
+
+      const post = await Post.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!post) {
+        return res
+          .status(404)
+          .json({ errorMessage: "情報が取得できませんでした" });
+      }
+
+      await post.deletePost();
+      res.json({ post });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(401)
+        .json({ errorMessage: "記事の削除ができませんでした。" });
     }
   }
 );
