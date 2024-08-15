@@ -76,21 +76,17 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     return await this.save();
   }
 
-  static async deletePost(req: any) {
-    const requestParams = req.params;
-    const id = requestParams.id;
-
-    const post = await Post.findOne({
+  async deletePost() {
+    await PostCategory.destroy({
       where: {
-        id,
+        postId: this.id,
       },
     });
-    await Post.destroy({
+    return await Post.destroy({
       where: {
-        id,
+        id: this.id,
       },
     });
-    return post;
   }
 }
 
