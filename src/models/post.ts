@@ -40,10 +40,8 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     return this;
   }
 
-  async updatePost(req: any) {
-    const { post: params } = req.body;
+  async updatePost(params: any) {
     const { title, body, status, categoryIds } = params || {};
-
     this.set({
       title,
       body,
