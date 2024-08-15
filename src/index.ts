@@ -6,6 +6,7 @@ import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
 import { Post } from "./models/post";
 import { sequelize } from "./models";
+import Category from "./models/category";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -173,7 +174,13 @@ app.get(
   async (req: any, res) => {
     try {
       const status = req.query;
-      const posts = await Post.findAll({ where: status });
+      const posts = await Post.findAll({
+        where: status,
+        include: {
+          model: Category,
+        },
+      });
+
       return res.json({ posts });
     } catch (err) {
       console.log(err);
@@ -193,6 +200,9 @@ app.get(
     const post = await Post.findOne({
       where: {
         id,
+      },
+      include: {
+        model: Category,
       },
     });
 

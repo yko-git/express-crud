@@ -9,6 +9,7 @@ import {
 
 import { Post } from "./post";
 import { sequelize } from ".";
+import Category from "./category";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
@@ -27,7 +28,12 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     if (status) {
       where.status = status;
     }
-    return await Post.findAll({ where });
+    return await Post.findAll({
+      where,
+      include: {
+        model: Category,
+      },
+    });
   }
 }
 
