@@ -1,10 +1,12 @@
 require("dotenv").config();
 import express, { Request, Response } from "express";
-import { User, getUserPost } from "./models/user";
+import { User } from "./models/user";
 import bodyParser from "body-parser";
 import passport, { hash } from "./auth";
 import jwt from "jsonwebtoken";
-import { Post, getPost } from "./models/post";
+import { Post } from "./models/post";
+import { sequelize } from "./models";
+import Category from "./models/category";
 
 if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
   console.error("env vars are not set.");
@@ -13,7 +15,11 @@ if (!process.env.MYPEPPER || !process.env.JWT_SECRET) {
 
 const app = express();
 app.listen(3000);
-console.log("Server is online.");
+
+(async () => {
+  // await sequelize.sync({ alter: true });
+  console.log("synchronized");
+})();
 
 // passportの初期化
 app.use(passport.initialize());
@@ -54,6 +60,7 @@ app.post("/auth/signup", async (req, res, next) => {
     await User.create(user);
     res.json({ errorMessage: "user情報の登録が完了しました" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ errorMessage: "userが正しく登録できませんでした" });
@@ -105,9 +112,22 @@ app.get(
   }),
   async (req: any, res: Response) => {
     const { user } = req.user;
+    const status = req.query.status;
+    if (!user) {
+      return res
+        .status(401)
+        .json({ errorMessage: "情報が取得できませんでした。" });
+    }
+
     try {
-      const result = await getUserPost(user, req);
-      return res.json({ result });
+      const instance = await User.findByPk(user.id);
+      if (!instance) {
+        return res
+          .status(404)
+          .json({ errorMessage: "情報が取得できませんでした。" });
+      }
+      const posts = await instance.getUserPost(status);
+      res.json({ posts });
     } catch (err) {
       console.log(err);
       return res
@@ -122,17 +142,27 @@ app.post(
   "/posts",
   passport.authenticate("jwt", { session: false }),
   async (req: any, res: Response) => {
+    const { user } = req.user;
+    if (!user) {
+      return res
+        .status(401)
+        .json({ errorMessage: "情報が取得できませんでした。" });
+    }
     try {
-      const { user } = req.user;
-      if (!user) {
-        return res
-          .status(401)
-          .json({ errorMessage: "情報が取得できませんでした。" });
-      }
-      const result = await getPost(req, user);
-      await Post.create(result);
-      res.json({ result });
+      const { post: params } = req.body;
+      const { title, body, status, categoryIds } = params || {};
+
+      const post = Post.build({
+        userId: user.id,
+        title,
+        body,
+        status,
+      });
+
+      await post.createPost(categoryIds);
+      res.json({ post });
     } catch (err) {
+      console.log(err);
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });
     }
   }
@@ -144,13 +174,104 @@ app.get(
   async (req: any, res) => {
     try {
       const status = req.query;
-      const posts = await Post.findAll({ where: status });
+      const posts = await Post.findAll({
+        where: status,
+        include: {
+          model: Category,
+          through: { attributes: [] },
+        },
+      });
+
       return res.json({ posts });
     } catch (err) {
       console.log(err);
       return res
         .status(401)
         .json({ errorMessage: "情報が取得できませんでした。" });
+    }
+  }
+);
+
+app.get(
+  "/posts/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res) => {
+    const requestParams = req.params;
+    const id = requestParams.id;
+    const post = await Post.findOne({
+      where: {
+        id,
+      },
+      include: {
+        model: Category,
+        through: { attributes: [] },
+      },
+    });
+
+    if (post) {
+      return res.json({ post });
+    } else {
+      return res
+        .status(404)
+        .json({ errorMessage: "情報が取得できませんでした。" });
+    }
+  }
+);
+
+app.patch(
+  "/posts/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res) => {
+    try {
+      const requestParams = req.params;
+      const id = requestParams.id;
+
+      const post = await Post.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!post) {
+        return res
+          .status(404)
+          .json({ errorMessage: "情報が取得できませんでした" });
+      }
+
+      const updatedPost = await post.updatePost(req);
+      res.json({ updatedPost });
+    } catch (err) {
+      console.log(err);
+      return res.status(401).json({ errorMessage: "登録ができませんでした。" });
+    }
+  }
+);
+
+app.delete(
+  "/posts/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res) => {
+    try {
+      const requestParams = req.params;
+      const id = requestParams.id;
+
+      const post = await Post.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!post) {
+        return res
+          .status(404)
+          .json({ errorMessage: "情報が取得できませんでした" });
+      }
+
+      await post.deletePost();
+      res.json({ post });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(401)
+        .json({ errorMessage: "記事の削除ができませんでした。" });
     }
   }
 );

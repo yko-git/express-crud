@@ -9,6 +9,7 @@ import {
 
 import { Post } from "./post";
 import { sequelize } from ".";
+import Category from "./category";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
@@ -19,6 +20,22 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare createPost: HasManyCreateAssociationMixin<Post, "userId">;
+  async getUserPost(status: any) {
+    const where: { userId: number; status?: any } = {
+      userId: this.id,
+    };
+
+    if (status) {
+      where.status = status;
+    }
+    return await Post.findAll({
+      where,
+      include: {
+        model: Category,
+        through: { attributes: [] },
+      },
+    });
+  }
 }
 
 User.init(
@@ -30,7 +47,7 @@ User.init(
     },
     loginId: {
       allowNull: false,
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       validate: {
         notNull: true,
       },
@@ -54,40 +71,17 @@ User.init(
         },
       },
     },
-    createdAt: DataTypes.NOW,
-    updatedAt: DataTypes.NOW,
+    createdAt: {
+      type: DataTypes.DATE,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
   },
-  {
-    sequelize,
-    tableName: "users",
-  }
+  { sequelize, modelName: "User", tableName: "users" }
 );
 
 User.hasMany(Post, { foreignKey: "userId" });
 Post.belongsTo(User, { foreignKey: "userId" });
 
-// /user/posts get
-async function getUserPost(user: any, req: any) {
-  const userId = user.id;
-  const status = req.query.status;
-
-  if (status) {
-    const posts = await Post.findAll({
-      where: {
-        userId: userId,
-        status: `${status}`,
-      },
-    });
-
-    return posts;
-  } else {
-    const posts = await Post.findAll({
-      where: {
-        userId: userId,
-      },
-    });
-    return posts;
-  }
-}
-
-export { User, getUserPost };
+export { User };

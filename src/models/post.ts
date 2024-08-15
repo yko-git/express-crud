@@ -7,9 +7,10 @@ import {
   ForeignKey,
 } from "sequelize";
 
-import Category from "./category";
 import { sequelize } from ".";
 import { User } from "./user";
+import Category from "./category";
+import PostCategory from "./postCategory";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare id: CreationOptional<number>;
@@ -19,6 +20,66 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare status: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  async createPost(categoryIds: number[]) {
+    const categories = await Category.findAll({
+      where: {
+        id: categoryIds,
+      },
+    });
+    await this.save();
+
+    const categoryPromise = categories.map((category) =>
+      PostCategory.create({
+        postId: this.id,
+        categoryId: category.id,
+      })
+    );
+    await Promise.all(categoryPromise);
+
+    return this;
+  }
+
+  async updatePost(req: any) {
+    const { post: params } = req.body;
+    const { title, body, status, categoryIds } = params || {};
+
+    this.set({
+      title,
+      body,
+      status,
+    });
+
+    await PostCategory.destroy({
+      where: {
+        postId: this.id,
+      },
+    });
+
+    if (categoryIds && categoryIds.length > 0) {
+      const categoryIdsPromise = categoryIds.map((categoryId: number) =>
+        PostCategory.create({
+          postId: this.id,
+          categoryId,
+        })
+      );
+      await Promise.all(categoryIdsPromise);
+    }
+    return await this.save();
+  }
+
+  async deletePost() {
+    await PostCategory.destroy({
+      where: {
+        postId: this.id,
+      },
+    });
+    return await Post.destroy({
+      where: {
+        id: this.id,
+      },
+    });
+  }
 }
 
 Post.init(
@@ -56,45 +117,17 @@ Post.init(
         },
       },
     },
-    createdAt: DataTypes.NOW,
-    updatedAt: DataTypes.NOW,
+    createdAt: {
+      type: DataTypes.DATE,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
   },
-  {
-    sequelize,
-    tableName: "posts",
-  }
+  { sequelize, modelName: "Post", tableName: "posts" }
 );
 
-Post.belongsToMany(Category, {
-  through: "PostCategories",
-  foreignKey: "postId",
-});
-Category.belongsToMany(Post, {
-  through: "PostCategories",
-  foreignKey: "categoryId",
-});
+Post.belongsToMany(Category, { through: "post_categories" });
+Category.belongsToMany(Post, { through: "post_categories" });
 
-// /posts post
-async function getPost(req: any, user: any) {
-  const { post: params } = req.body;
-  const { title, body, status, categoryIds } = params || {};
-
-  // const categories = await Category.findAll({
-  //   where: {
-  //     id: categoryIds,
-  //   },
-  // });
-
-  const post = {
-    userId: user.id,
-    title,
-    body,
-    status,
-    // categoryIds: categories,
-    categoryIds,
-  };
-
-  return post;
-}
-
-export { Post, getPost };
+export { Post };
