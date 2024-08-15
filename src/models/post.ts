@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   CreationOptional,
   ForeignKey,
+  BelongsToManySetAssociationsMixin,
 } from "sequelize";
 
 import { sequelize } from ".";
@@ -20,24 +21,19 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare status: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+  declare setCategories: BelongsToManySetAssociationsMixin<Category, number>;
 
   async createPost(categoryIds: number[]) {
-    const categories = await Category.findAll({
-      where: {
-        id: categoryIds,
-      },
+    const result = await sequelize.transaction(async (t) => {
+      this.save({ transaction: t });
+      const categories = await Category.findAll({
+        where: {
+          id: categoryIds,
+        },
+      });
+      this.setCategories(categories);
     });
-    await this.save();
-
-    const categoryPromise = categories.map((category) =>
-      PostCategory.create({
-        postId: this.id,
-        categoryId: category.id,
-      })
-    );
-    await Promise.all(categoryPromise);
-
-    return this;
+    return result;
   }
 
   async updatePost(params: any) {
