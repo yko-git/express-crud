@@ -21,31 +21,23 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
-  static async createPost(req: any, user: any) {
-    const { post: params } = req.body;
-    const { title, body, status, categoryIds } = params || {};
+  async createPost(categoryIds: number[]) {
     const categories = await Category.findAll({
       where: {
         id: categoryIds,
       },
     });
-
-    const post = await Post.create({
-      userId: user.id,
-      title,
-      body,
-      status,
-    });
+    await this.save();
 
     const categoryPromise = categories.map((category) =>
       PostCategory.create({
-        postId: post.id,
+        postId: this.id,
         categoryId: category.id,
       })
     );
     await Promise.all(categoryPromise);
 
-    return post;
+    return this;
   }
 
   async updatePost(req: any) {
