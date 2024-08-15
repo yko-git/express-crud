@@ -63,11 +63,6 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
         status,
       });
 
-      await PostCategory.destroy({
-        where: {
-          postId: this.id,
-        },
-      });
       this.setCategories(categoryIds);
       return await this.save();
     });
