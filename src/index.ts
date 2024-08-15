@@ -178,6 +178,7 @@ app.get(
         where: status,
         include: {
           model: Category,
+          through: { attributes: [] },
         },
       });
 
@@ -203,6 +204,7 @@ app.get(
       },
       include: {
         model: Category,
+        through: { attributes: [] },
       },
     });
 

@@ -32,6 +32,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
       where,
       include: {
         model: Category,
+        through: { attributes: [] },
       },
     });
   }
