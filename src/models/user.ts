@@ -20,7 +20,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare getPosts: HasManyGetAssociationsMixin<Post>;
-  async getUserPost(status: any) {
+  async posts(status: any) {
     const where: { userId: number; status?: any } = {
       userId: this.id,
     };
