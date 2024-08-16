@@ -23,7 +23,7 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare updatedAt: CreationOptional<Date>;
   declare setCategories: BelongsToManySetAssociationsMixin<Category, number>;
 
-  async createPost(categoryIds: number[]) {
+  async upsert(categoryIds: number[]) {
     const result = await sequelize.transaction(async (t) => {
       this.save({ transaction: t });
       const categories = await Category.findAll({
@@ -36,25 +36,7 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     return result;
   }
 
-  async updatePost(params: any) {
-    const { title, body, status, categoryIds } = params || {};
-
-    const result = await sequelize.transaction(async (t) => {
-      this.set({
-        title,
-        body,
-        status,
-      });
-
-      await this.save({ transaction: t });
-
-      this.setCategories(categoryIds);
-      return await this.save();
-    });
-    return result;
-  }
-
-  async deletePost() {
+  async delete() {
     const result = await sequelize.transaction(async (t) => {
       await PostCategory.destroy({
         where: {

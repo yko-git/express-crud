@@ -126,7 +126,7 @@ app.get(
           .status(404)
           .json({ errorMessage: "情報が取得できませんでした。" });
       }
-      const posts = await instance.getUserPost(status);
+      const posts = await instance.posts(status);
       res.json({ posts });
     } catch (err) {
       console.log(err);
@@ -159,7 +159,7 @@ app.post(
         status,
       });
 
-      await post.createPost(categoryIds);
+      await post.upsert(categoryIds);
       res.json({ post });
     } catch (err) {
       console.log(err);
@@ -238,9 +238,13 @@ app.patch(
           .status(404)
           .json({ errorMessage: "情報が取得できませんでした" });
       }
-
-      const updatedPost = await post.updatePost(params);
-      res.json({ updatedPost });
+      post.set({
+        title: params.title,
+        body: params.body,
+        status: params.status,
+      });
+      await post.upsert(params.categoryIds);
+      res.json({ post: post });
     } catch (err) {
       console.log(err);
       return res.status(401).json({ errorMessage: "登録ができませんでした。" });
@@ -267,7 +271,7 @@ app.delete(
           .json({ errorMessage: "情報が取得できませんでした" });
       }
 
-      await post.deletePost();
+      await post.delete();
       res.json({ post });
     } catch (err) {
       console.log(err);
