@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   CreationOptional,
   ForeignKey,
+  BelongsToManySetAssociationsMixin,
 } from "sequelize";
 
 import { sequelize } from ".";
@@ -20,65 +21,37 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare status: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+  declare setCategories: BelongsToManySetAssociationsMixin<Category, number>;
 
-  async createPost(categoryIds: number[]) {
-    const categories = await Category.findAll({
-      where: {
-        id: categoryIds,
-      },
+  async upsert(categoryIds: number[]) {
+    const result = await sequelize.transaction(async (t) => {
+      this.save({ transaction: t });
+      const categories = await Category.findAll({
+        where: {
+          id: categoryIds,
+        },
+      });
+      this.setCategories(categories);
     });
-    await this.save();
-
-    const categoryPromise = categories.map((category) =>
-      PostCategory.create({
-        postId: this.id,
-        categoryId: category.id,
-      })
-    );
-    await Promise.all(categoryPromise);
-
-    return this;
+    return result;
   }
 
-  async updatePost(req: any) {
-    const { post: params } = req.body;
-    const { title, body, status, categoryIds } = params || {};
-
-    this.set({
-      title,
-      body,
-      status,
-    });
-
-    await PostCategory.destroy({
-      where: {
-        postId: this.id,
-      },
-    });
-
-    if (categoryIds && categoryIds.length > 0) {
-      const categoryIdsPromise = categoryIds.map((categoryId: number) =>
-        PostCategory.create({
+  async delete() {
+    const result = await sequelize.transaction(async (t) => {
+      await PostCategory.destroy({
+        where: {
           postId: this.id,
-          categoryId,
-        })
-      );
-      await Promise.all(categoryIdsPromise);
-    }
-    return await this.save();
-  }
-
-  async deletePost() {
-    await PostCategory.destroy({
-      where: {
-        postId: this.id,
-      },
+        },
+        transaction: t,
+      });
+      return await Post.destroy({
+        where: {
+          id: this.id,
+        },
+        transaction: t,
+      });
     });
-    return await Post.destroy({
-      where: {
-        id: this.id,
-      },
-    });
+    return result;
   }
 }
 

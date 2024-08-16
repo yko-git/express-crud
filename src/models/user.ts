@@ -4,7 +4,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
-  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
 } from "sequelize";
 
 import { Post } from "./post";
@@ -19,8 +19,8 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare iconUrl: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
-  declare createPost: HasManyCreateAssociationMixin<Post, "userId">;
-  async getUserPost(status: any) {
+  declare getPosts: HasManyGetAssociationsMixin<Post>;
+  async posts(status: any) {
     const where: { userId: number; status?: any } = {
       userId: this.id,
     };
@@ -28,7 +28,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     if (status) {
       where.status = status;
     }
-    return await Post.findAll({
+    return this.getPosts({
       where,
       include: {
         model: Category,
