@@ -1,6 +1,6 @@
 require("dotenv").config();
 
- const configs = {
+const configs = {
   development: {
     username: "root",
     password: process.env.SECRET_KEY,
