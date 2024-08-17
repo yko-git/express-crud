@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ts-node/esm ./*.ts",
-    "build": "tsc --project tsconfig.json"
+    "build": "tsc --project tsconfig.json",
+    "migrate": "sequelize-cli db:migrate"
   },
   "author": "",
   "license": "ISC",
