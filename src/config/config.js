@@ -17,7 +17,7 @@ const configs = {
   },
   production: {
     username: "root",
-    password: null,
+    password: process.env.SECRET_KEY,
     database: "database_production",
     host: "127.0.0.1",
     dialect: "mysql",
