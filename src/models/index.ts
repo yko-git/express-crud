@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 // import config from "../config/config";
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.CLEARDB_DATABASE_URL;
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL environment variable is not defined");
