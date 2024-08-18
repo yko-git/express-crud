@@ -25,13 +25,13 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
 
   async upsert(categoryIds: number[]) {
     const result = await sequelize.transaction(async (t) => {
-      this.save({ transaction: t });
+      await this.save({ transaction: t });
       const categories = await Category.findAll({
         where: {
           id: categoryIds,
         },
       });
-      this.setCategories(categories);
+      await this.setCategories(categories, { transaction: t });
     });
     return result;
   }
